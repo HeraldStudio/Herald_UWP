@@ -12,17 +12,11 @@
             <PivotItem x:Uid="Home"
                        Header="主页">
                 <StackPanel Orientation="Vertical">
-                    <ListView Height="500">
-                        <StackPanel>
-                            <TextBlock>绩点</TextBlock>
-                            <TextBlock x:Name="GPA"/>
-                        </StackPanel>
-                    </ListView>
-                    <Button x:Name="Button_DeleteFile"
-                            Content="删除本地文件"
+                    <Button x:Name="Button_GPA"
+                            Content="成绩信息"
                         Height="47"
                         Width="134"
-                        Click ="DeleteFile"
+                        Click ="NaviToGPA"
                         HorizontalAlignment="Center"/>
                 </StackPanel>
             </PivotItem>

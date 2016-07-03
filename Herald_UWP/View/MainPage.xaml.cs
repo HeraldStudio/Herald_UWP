@@ -16,22 +16,6 @@ namespace Herald_UWP.View
         public MainPage()
         {
             this.InitializeComponent();
-            InitialContent();
-        }
-
-        private void InitialContent()
-        {
-            QueryGPA();
-        }
-
-        private async void QueryGPA()
-        {
-            GPA info = await currentApp.client.Query<GPA>();
-            if (info != null)
-            {
-                string str = "\n平均绩点：" + info.content[0].gpa + "\n计算时间：" + info.content[0].calculateTime;
-                GPA.Text = str;
-            }
         }
 
         private void Logout(object sender, RoutedEventArgs e)
@@ -45,10 +29,12 @@ namespace Herald_UWP.View
             }
         }
 
-        private void DeleteFile(object sender, RoutedEventArgs e)
+        private void NaviToGPA(object sender, RoutedEventArgs e)
         {
-            FileSystem.Delete("GPA.data");
-            QueryGPA();
+            if (this.Frame != null)
+            {
+                this.Frame.Navigate(typeof(GPAPage));
+            }
         }
     }
 }

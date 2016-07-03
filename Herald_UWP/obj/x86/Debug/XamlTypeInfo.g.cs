@@ -133,14 +133,14 @@ namespace Herald_UWP.Herald_UWP_XamlTypeInfo
         private void InitTypeTables()
         {
             _typeNameTable = new string[5];
-            _typeNameTable[0] = "Herald_UWP.GPAPage";
+            _typeNameTable[0] = "Herald_UWP.View.GPAPage";
             _typeNameTable[1] = "Windows.UI.Xaml.Controls.Page";
             _typeNameTable[2] = "Windows.UI.Xaml.Controls.UserControl";
             _typeNameTable[3] = "Herald_UWP.View.MainPage";
             _typeNameTable[4] = "Herald_UWP.View.UserLogin";
 
             _typeTable = new global::System.Type[5];
-            _typeTable[0] = typeof(global::Herald_UWP.GPAPage);
+            _typeTable[0] = typeof(global::Herald_UWP.View.GPAPage);
             _typeTable[1] = typeof(global::Windows.UI.Xaml.Controls.Page);
             _typeTable[2] = typeof(global::Windows.UI.Xaml.Controls.UserControl);
             _typeTable[3] = typeof(global::Herald_UWP.View.MainPage);
@@ -179,7 +179,7 @@ namespace Herald_UWP.Herald_UWP_XamlTypeInfo
             return -1;
         }
 
-        private object Activate_0_GPAPage() { return new global::Herald_UWP.GPAPage(); }
+        private object Activate_0_GPAPage() { return new global::Herald_UWP.View.GPAPage(); }
         private object Activate_3_MainPage() { return new global::Herald_UWP.View.MainPage(); }
         private object Activate_4_UserLogin() { return new global::Herald_UWP.View.UserLogin(); }
 
@@ -193,7 +193,7 @@ namespace Herald_UWP.Herald_UWP_XamlTypeInfo
             switch (typeIndex)
             {
 
-            case 0:   //  Herald_UWP.GPAPage
+            case 0:   //  Herald_UWP.View.GPAPage
                 userType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
                 userType.Activator = Activate_0_GPAPage;
                 userType.SetIsLocalType();

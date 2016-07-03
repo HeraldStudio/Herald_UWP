@@ -9,6 +9,14 @@ using System.Runtime.Serialization.Json;
 // 这里的数据类型名称和APIBasicInfo中各字段的名称保持一致，实现动态调用
 namespace Herald_UWP.Utils
 {
+    // 分组用的数据类型
+    [DataContract]
+    public class GroupInfoList : List<object>
+    {
+        [DataMember(Order = 0)]
+        public object key { get; set; }
+    }
+
     // 基类
     [DataContract]
     public class BaseType

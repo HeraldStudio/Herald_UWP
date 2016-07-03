@@ -101,6 +101,9 @@
     <Compile Include="Utils\HeraldClient.cs" />
     <Compile Include="Utils\HeraldHttpUtil.cs" />
     <Compile Include="Utils\HeraldJsonType.cs" />
+    <Compile Include="View\GPAPage.xaml.cs">
+      <DependentUpon>GPAPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
