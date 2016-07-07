@@ -80,26 +80,28 @@ namespace Herald_UWP.Utils
         }
 
         // 查询函数
-        public async Task<T> Query<T>() where T:BaseType
+        public async Task<T> Query<T>(List<KeyValuePair<string, string>> param = null, bool isRefresh = false) where T:BaseType
         {
             // 根据查询的信息的封装类名称，获取API中对应的地址
             string APIName = typeof(T).Name;
             string address = (string)typeof(APIBasicInfo).GetField(APIName).GetValue(null);
-
+            
             // 没有本地数据则从服务器获取
             string resultStr = await FileSystem.Read(APIName + ".data");
 
-            if (resultStr != null && resultStr != "")
+            if (resultStr != null && resultStr != "" && !isRefresh)
             {
                 return FileSystem.ParseJson<T>(resultStr);
             }
             else
             {
-                var requestContent = new HttpFormUrlEncodedContent(
-                    new List<KeyValuePair<string, string>>
-                    {
-                    new KeyValuePair<string, string>("uuid", UUID),
-                    });
+                if(param == null)
+                {
+                    param = new List<KeyValuePair<string, string>>();
+                }
+
+                param.Add(new KeyValuePair<string, string>("uuid", UUID));
+                var requestContent = new HttpFormUrlEncodedContent(param);
 
                 // 返回不正确的信息就无脑重试
                 T resultObj = null;

@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:data="using:Herald_UWP.Utils"
+    xmlns:pr="using:PullToRefresh.UWP"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -14,155 +15,170 @@
 
         <!-- 显示成绩的ListView模板 -->
         <DataTemplate x:Name="GradeListViewTemplate" x:DataType="data:GPAContent">
-            <StackPanel Orientation="Vertical">
-                <Grid Background="White" Padding="10,5,10,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width = "*"/>
-                        <ColumnDefinition Width = "Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+            <Grid Background="White" Padding="10,5,10,5" BorderBrush="LightGray" BorderThickness="0,0,0,1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width = "*"/>
+                    <ColumnDefinition Width = "Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                    <TextBlock Text="{x:Bind name}"
-                               Grid.Row="0"
-                               Grid.Column="0"
-                               Padding="5,0,0,0"
-                               Foreground="#10893E"
-                               HorizontalAlignment="Left"/>
-                    <StackPanel Orientation="Horizontal"
-                                Grid.Row="1"    
-                                Grid.Column="0"
-                                Padding="5,0,0,0">
-                        <TextBlock Text="{x:Bind type}" Padding="0,0,10,0"/>
-                        <TextBlock Text="绩点："/>
-                        <TextBlock Text="{x:Bind credit}"/>
-                    </StackPanel>
-                    <TextBlock Text="{x:Bind score}"
-                               Grid.RowSpan="2"
-                               Grid.Column="1"
-                               Foreground="#10893E"
-                               Padding="0,0,5,0"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"/>
-                
-                </Grid>
-                <Line Margin="10,0,10,0"
-                      Stretch="Fill"/>
-            </StackPanel>
+                <TextBlock Text="{x:Bind name}"
+                           Grid.Row="0"
+                           Grid.Column="0"
+                           Padding="5,0,0,0"
+                           Foreground="#10893E"
+                           HorizontalAlignment="Left"/>
+                <StackPanel Orientation="Horizontal"
+                            Grid.Row="1"    
+                            Grid.Column="0"
+                            Padding="5,0,0,0">
+                    <TextBlock Text="{x:Bind type}" Padding="0,0,10,0"/>
+                    <TextBlock Text="绩点："/>
+                    <TextBlock Text="{x:Bind credit}"/>
+                </StackPanel>
+                <TextBlock Text="{x:Bind score}"
+                           Grid.RowSpan="2"
+                           Grid.Column="1"
+                           Foreground="#10893E"
+                           Padding="0,0,5,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"/>
+            </Grid>
         </DataTemplate>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height= "2*"/>
-            <RowDefinition Height= "0.5*"/>
-            <RowDefinition Height= "8*"/>
-        </Grid.RowDefinitions>
+        <pr:PullToRefreshBox RefreshInvoked="PullToRefreshInvoked">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height= "2*"/>
+                    <RowDefinition Height= "0.5*"/>
+                    <RowDefinition Height= "8*"/>
+                </Grid.RowDefinitions>
 
-        <!--显示绩点的背景和中间的线条-->
-        <Rectangle Grid.Row="0" Grid.RowSpan="2" Fill="#00CC6A"/>
-        <Line Grid.Row="0"
-              Margin="0,20,0,5"
-              Stretch="Fill"
-              X1="0" Y1="1"
-              X2="0" Y2="0"
-              HorizontalAlignment="Center"
-              Stroke="White"
-              StrokeThickness="1"/>
-        
-        <!--计算的时间-->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Foreground="White" 
-                       FontSize="10"
-                       Text="数据取自教务处，计算时间："/>
-            <TextBlock Foreground="White"
-                       FontSize="10"
-                       Text="{Binding calculateTime}"/>
-        </StackPanel>
+                <!--显示绩点的背景和中间的线条-->
+                <Rectangle Grid.Row="0" Grid.RowSpan="2" Fill="#00CC6A"/>
+                <Line Grid.Row="0"
+                  Margin="0,20,0,5"
+                  Stretch="Fill"
+                  X1="0" Y1="1"
+                  X2="0" Y2="0"
+                  HorizontalAlignment="Center"
+                  Stroke="White"
+                  StrokeThickness="1"/>
 
-        <!--平均绩点和首修绩点-->
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,25,0,0">
-                <TextBlock Text="{Binding gpa}"
-                           Foreground="White" 
-                           FontSize="30" 
-                           HorizontalAlignment="Center"/>
-                <TextBlock Foreground="White" Text="平均绩点"/>
-            </StackPanel>
-            <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,25,0,0">
-                <TextBlock Text="{Binding gpaWithoutRevamp}"
-                           Foreground="White" 
-                           FontSize="30" 
-                           HorizontalAlignment="Center"/>
-                <TextBlock Foreground="White" Text="首修绩点"/>
-            </StackPanel>
-        </Grid>
+                <!--计算的时间-->
+                <StackPanel Grid.Row="1" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center">
+                    <TextBlock Foreground="White" 
+                           FontSize="10"
+                           Text="数据取自教务处，计算时间："/>
+                    <TextBlock Foreground="White"
+                           FontSize="10"
+                           Text="{Binding calculateTime}"/>
+                </StackPanel>
 
-        <!--各科成绩-->
-        <SemanticZoom Grid.Row="2">
-            <!-- 索引视图 -->
-            <SemanticZoom.ZoomedOutView>
-                <GridView ItemsSource="{x:Bind GradesCVS.View.CollectionGroups}">
-                    <GridView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsWrapGrid MaximumRowsOrColumns="2" 
+                <!--平均绩点和首修绩点-->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" 
+                            Margin="0,25,0,0"
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center">
+                        <TextBlock Text="{Binding gpa}"
+                               Foreground="White" 
+                               FontSize="30" 
+                               HorizontalAlignment="Center"/>
+                        <TextBlock Foreground="White" Text="平均绩点"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1"  
+                            Margin="0,25,0,0"
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center">
+                        <TextBlock Text="{Binding gpaWithoutRevamp}"
+                               Foreground="White" 
+                               FontSize="30" 
+                               HorizontalAlignment="Center"/>
+                        <TextBlock Foreground="White" Text="首修绩点"/>
+                    </StackPanel>
+                </Grid>
+
+                <!--各科成绩-->
+                <SemanticZoom Grid.Row="2">
+                    <!-- 索引视图 -->
+                    <SemanticZoom.ZoomedOutView>
+                        <GridView ItemsSource="{x:Bind GradesCVS.View.CollectionGroups}">
+                            <GridView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsWrapGrid MaximumRowsOrColumns="2" 
                                            VerticalAlignment="Top" 
                                            Orientation="Horizontal"
                                            HorizontalAlignment="Center"
                                            Margin="0,20,0,20"/>
-                        </ItemsPanelTemplate>
-                    </GridView.ItemsPanel>
-                    <GridView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Background="#00CC6A" Margin="20">
-                                <TextBlock Text="{Binding Group.key}"
+                                </ItemsPanelTemplate>
+                            </GridView.ItemsPanel>
+                            <GridView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#00CC6A" Margin="20">
+                                        <TextBlock Text="{Binding Group.key}"
                                            Foreground="White"
                                            FontSize="30"
                                            Padding="10,5,10,5"/>
-                            </Border>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                </GridView>
-            </SemanticZoom.ZoomedOutView>
-            
-            <!-- 具体信息 -->
-            <SemanticZoom.ZoomedInView>
-                <ListView Background="White"
-                          ItemTemplate="{StaticResource GradeListViewTemplate}"
-                          ItemsSource="{x:Bind GradesCVS.View, Mode=OneWay}"
-                          SelectionMode="None">
-                    <ListView.Resources>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            <!-- 取消掉默认样式，包括点击动画 -->
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListViewItem">
-                                        <ContentPresenter/>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListView.Resources>
-
-                    <ListView.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate x:DataType="data:GroupInfoList">
-                                    <TextBlock Text="{x:Bind key}" Style="{ThemeResource TitleTextBlockStyle}"/>
+                                    </Border>
                                 </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
-                    </ListView.GroupStyle>
-                </ListView>
-            </SemanticZoom.ZoomedInView>
-        </SemanticZoom>
+                            </GridView.ItemTemplate>
+                        </GridView>
+                    </SemanticZoom.ZoomedOutView>
 
+                    <!-- 具体信息 -->
+                    <SemanticZoom.ZoomedInView>
+                        <ListView Background="#1000"
+                                  ItemTemplate="{StaticResource GradeListViewTemplate}"
+                                  ItemsSource="{x:Bind GradesCVS.View, Mode=OneWay}"
+                                  SelectionMode="None">
+                            <ListView.Resources>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <!-- 取消掉默认样式，包括点击动画 -->
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListViewItem">
+                                                <ContentPresenter/>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListView.Resources>
+
+                            <ListView.GroupStyle>
+                                <GroupStyle>
+                                    <GroupStyle.HeaderTemplate>
+                                        <DataTemplate x:DataType="data:GroupInfoList">
+                                            <TextBlock Text="{x:Bind key}" Style="{ThemeResource TitleTextBlockStyle}"/>
+                                        </DataTemplate>
+                                    </GroupStyle.HeaderTemplate>
+                                </GroupStyle>
+                            </ListView.GroupStyle>
+
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <!-- 如果是默认的ItemsPanel则对于GroupStyle的Panel的修改不起作用 -->
+                                    <!-- 但不是默认的很多默认的样式都没有了，暂时就这样吧 -->
+                                    <ItemsStackPanel Orientation="Vertical" AreStickyGroupHeadersEnabled="False"/>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                        </ListView>
+                    </SemanticZoom.ZoomedInView>
+                </SemanticZoom>
+            </Grid>
+        </pr:PullToRefreshBox>
     </Grid>
 </Page>

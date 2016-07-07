@@ -5,4 +5,27 @@
     xmlns:local="using:Herald_UWP"
     RequestedTheme="Light">
 
+    <Application.Resources>
+        <!-- 自定义的ListViewHeaderItem模板，去掉了下面的横线，并使内容拉伸到父元素宽度 -->
+        <Style TargetType="ListViewHeaderItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewHeaderItem">
+                        <Grid VerticalAlignment="Center"
+                              Background="{TemplateBinding Background}"
+                              BorderBrush="{TemplateBinding BorderBrush}"
+                              BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter x:Name="ContentPresenter"
+                                              Margin="{TemplateBinding Padding}"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              ContentTransitions="{TemplateBinding ContentTransitions}"
+                                              HorizontalContentAlignment="Stretch"
+                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+     </Application.Resources>
 </Application>

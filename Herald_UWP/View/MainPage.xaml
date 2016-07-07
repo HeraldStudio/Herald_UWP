@@ -11,13 +11,19 @@
         <Pivot x:Uid="MainPivot" x:Name="Pivot">
             <PivotItem x:Uid="Home"
                        Header="主页">
-                <StackPanel Orientation="Vertical">
-                    <Button x:Name="Button_GPA"
-                            Content="成绩信息"
-                        Height="47"
-                        Width="134"
-                        Click ="NaviToGPA"
-                        HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <Button Content="成绩信息"
+                            Height="50"
+                            Width="140"
+                            Click ="NaviToGPA"
+                            Margin="20"
+                            HorizontalAlignment="Center"/>
+                    <Button Content="一卡通"
+                            Height="50"
+                            Width="140"
+                            Click="NaviToCard"
+                            Margin="20"
+                            HorizontalAlignment="Center"/>
                 </StackPanel>
             </PivotItem>
 

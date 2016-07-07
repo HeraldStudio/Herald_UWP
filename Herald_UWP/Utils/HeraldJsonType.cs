@@ -214,6 +214,8 @@ namespace Herald_UWP.Utils
         public string system { set; get; }
         [DataMember(Order = 4)]
         public string left { set; get; }
+        [DataMember(Order = 5)]
+        public string time { set; get; }
     }
 
 

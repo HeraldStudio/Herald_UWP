@@ -36,5 +36,13 @@ namespace Herald_UWP.View
                 this.Frame.Navigate(typeof(GPAPage));
             }
         }
+
+        private void NaviToCard(object sender, RoutedEventArgs e)
+        {
+            if (this.Frame != null)
+            {
+                this.Frame.Navigate(typeof(CardPage));
+            }
+        }
     }
 }

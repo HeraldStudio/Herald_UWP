@@ -16,6 +16,10 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Herald_UWP.Utils;
 using Herald_UWP.View;
+using Windows.UI.Core;
+using Windows.Foundation.Metadata;
+using Windows.UI.ViewManagement;
+using Windows.UI;
 
 namespace Herald_UWP
 {
@@ -44,8 +48,7 @@ namespace Herald_UWP
             Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             if (localSettings.Values.ContainsKey("UUID"))
             {
-                client.UUID = localSettings.Values["UUID"].ToString();
-                
+                client.UUID = localSettings.Values["UUID"].ToString();                
             }
         }
 
@@ -54,7 +57,7 @@ namespace Herald_UWP
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
 
 #if DEBUG
@@ -72,8 +75,10 @@ namespace Herald_UWP
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = new Frame();
-
                 rootFrame.NavigationFailed += OnNavigationFailed;
+
+                // 每次导航到新页面的时候都根据页面能否回退来显示后退按钮
+                rootFrame.Navigated += OnNavigated;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -82,6 +87,22 @@ namespace Herald_UWP
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
+
+                // 注册后退事件
+                SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+
+                // 显示PC设备TitleBar上的的后退按钮
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    rootFrame.CanGoBack ?
+                    AppViewBackButtonVisibility.Visible :
+                    AppViewBackButtonVisibility.Collapsed;
+
+                // Mobile设备设置为全屏模式，并隐藏StatusBar
+                if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+                {
+                    ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
+                    await StatusBar.GetForCurrentView().HideAsync();
+                }
             }
 
             if (rootFrame.Content == null)
@@ -126,6 +147,32 @@ namespace Herald_UWP
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        private void OnNavigated(object sender, NavigationEventArgs e)
+        {
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                ((Frame)sender).CanGoBack ?
+                AppViewBackButtonVisibility.Visible :
+                AppViewBackButtonVisibility.Collapsed;
+        }
+
+        private void OnBackRequested(object sender, BackRequestedEventArgs e)
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            if (rootFrame != null)
+            {
+                if (rootFrame.CanGoBack)
+                {
+                    e.Handled = true;
+                    rootFrame.GoBack();
+                }
+                else
+                {
+                    Application.Current.Exit();
+                }
+            }
         }
     }
 }
