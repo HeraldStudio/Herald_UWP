@@ -11,7 +11,7 @@ namespace Herald_UWP.View
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private App currentApp = Application.Current as App;
+        private BaseException currentApp = Application.Current as BaseException;
 
         public MainPage()
         {

@@ -1,55 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Web.Http;
-using System.Runtime.Serialization.Json;
-using System.IO;
-using System.Reflection;
-using Windows.Storage;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Herald_UWP.Utils
 {
-    // API的URL和APPID
-    internal static class APIBasicInfo
-    {
-        public const string APP_ID = "5b45c345a764a6d35c905e1a70a590ba";
-
-        // 授权相关的URL
-        private const string AUTH_URL = "http://www.heraldstudio.com/uc/";
-        public const string AUTH = AUTH_URL + "auth";       // 授权
-        public const string CHECK = AUTH_URL + "check";     // 检查UUID有效性
-        public const string UPDATE = AUTH_URL + "update";   // 更新用户信息
-        public const string DEAUTH = AUTH_URL + "deauth";   // 取消授权
-
-        // 查询相关的URL
-        private const string API_URL = "http://www.heraldstudio.com/api/";
-        public const string SRTP = API_URL + "srtp";                // 查询SRTP
-        public const string Curriculum = API_URL + "curriculum";    // 查询课程表
-        public const string GPA = API_URL + "gpa";                  // 查询绩点
-        public const string PE = API_URL + "pe";                    // 查询跑操
-        public const string PEDetail = API_URL + "pedetail";        // 查询跑操记录
-        public const string NIC = API_URL + "nic";                  // 查询校园网信息
-        public const string Card = API_URL + "card";                // 查询一卡通
-        public const string Lecture = API_URL + "lecture";          // 查询人文讲座
-        public const string Library = API_URL + "library";          // 查询图书馆借阅
-        public const string Search = API_URL + "search";            // 图书搜索
-
-        public const string TERM = API_URL + "term";                // 查询学期列表
-        public const string SIDEBAR = API_URL + "sidebar";          // 查询课程列表
-        public const string SIMSIMI = API_URL + "simsimi";          // 调戏小猴
-        public const string RENEW = API_URL + "renew";              // 图书馆续借
-    }
-
     public class HeraldClient
     {
-        // 用来向小猴的服务器发起请求
-        private HeraldHttpUtil client = new HeraldHttpUtil();
-
-        // 登陆之后只会用到UUID所以只有这个变量
+        private HeraldHttpUtil client = new HeraldHttpUtil();   // 处理Http请求
         public string UUID { get; set; } = null;
 
-        // 授权函数
+        /// <summary>
+        /// 获取授权，保存UUID
+        /// </summary>
+        /// <param name="userID">用户一卡通号</param>
+        /// <param name="password">用户密码</param>
+        /// <returns>授权是否成功</returns>
         public async Task<bool> Auth(string userID, string password)
         {
             // 请求所需的参数
@@ -79,111 +47,62 @@ namespace Herald_UWP.Utils
             return true;
         }
 
-        // 查询函数
-        public async Task<T> Query<T>(List<KeyValuePair<string, string>> param = null, bool isRefresh = false) where T:BaseType
+        /// <summary>
+        /// 向指定的API获取Json数据并转换为JObject格式返回，遇到错误会抛出异常
+        /// </summary>
+        /// <param name="url">API地址</param>
+        /// <param name="param">额外的参数</param>
+        /// <returns>JObeject格式的结果</returns>
+        private async Task<JObject> QueryForJson(string url, List<KeyValuePair<string, string>> param = null)
         {
-            // 根据查询的信息的封装类名称，获取API中对应的地址
-            string APIName = typeof(T).Name;
-            string address = (string)typeof(APIBasicInfo).GetField(APIName).GetValue(null);
-            
-            // 没有本地数据则从服务器获取
-            string resultStr = await FileSystem.Read(APIName + ".data");
+            if (param == null)
+                param = new List<KeyValuePair<string, string>>();
 
-            if (resultStr != null && resultStr != "" && !isRefresh)
+            param.Add(new KeyValuePair<string, string>("uuid", UUID));
+            var requestContent = new HttpFormUrlEncodedContent(param);
+
+            // 先将获取到的Json直接转换为JObject用于预处理
+            JObject resultObj = null;
+            bool isWrongResult = false;
+
+            // 因为服务器的问题，偶尔会返回错误信息而不是Json数据，多试几次就好了
+            do
             {
-                return FileSystem.ParseJson<T>(resultStr);
-            }
-            else
+                string resultStr = await client.Post(url, requestContent);
+                try
+                {
+                    resultObj = JObject.Parse(resultStr);
+                }
+                catch (JsonReaderException)
+                {
+                    isWrongResult = true;
+                }
+            } while (isWrongResult);
+
+            // 处理返回的code，对于错误的进一步处理还没写，暂时作为异常抛出
+            int code = resultObj["code"].Value<int>();
+            switch(code)
             {
-                if(param == null)
-                {
-                    param = new List<KeyValuePair<string, string>>();
-                }
-
-                param.Add(new KeyValuePair<string, string>("uuid", UUID));
-                var requestContent = new HttpFormUrlEncodedContent(param);
-
-                // 返回不正确的信息就无脑重试
-                T resultObj = null;
-                while (resultObj == null || resultObj.code != 200)
-                {
-                    resultStr = await client.Post(address, requestContent);
-                    resultObj = FileSystem.ParseJson<T>(resultStr);
-                }
-
-                // 写入本地数据，返回查询对象
-                FileSystem.Write(APIName + ".data", resultStr);
-                return resultObj;
+                case 200:
+                    return resultObj;
+                case 400:
+                    throw new HeraldRequestException("Error " + code + "：缺少参数");
+                case 401:
+                    throw new HeraldRequestException("Error" + code + "：身份认证失败");
+                case 408:
+                    throw new HeraldRequestException("Error" + code + "：访问超时");
+                case 500:
+                    throw new HeraldRequestException("Error" + code + "：系统错误");
+                default:
+                    throw new HeraldRequestException("Error" + code + "其它未知错误");
             }
-        }
-    }
+        }       
 
-    public static class FileSystem
-    {
-        // 将Json格式的string转换为相应的封装类
-        public static T ParseJson<T>(string jsonString)
+        public GPA GetGPA(JObject json)
         {
-            try
-            {
-                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString)))
-                {
-                    return (T)new DataContractJsonSerializer(typeof(T)).ReadObject(stream);
-                }
-            }
-            catch(Exception)
-            {
-                return default(T);
-            }
-        }
+            GPA gpaInfo = new GPA();
 
-        // 写入本地数据
-        public static async void Write(string fileName, string data)
-        {
-            // 获取应用的本地文件夹并创建文件，如果文件已存在则替换旧的
-            var localFolder = ApplicationData.Current.LocalFolder;
-            var localFile = await localFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-
-            // 写入文本
-            using (var writeStream = await localFile.OpenStreamForWriteAsync())
-            {
-                using (var writer = new StreamWriter(writeStream))
-                {
-                    await writer.WriteAsync(data);
-                }
-            }
-        }
-
-        // 读取本地数据
-        public static async Task<string> Read(string fileName)
-        {
-            try
-            {
-                // 获取应用的本地文件夹并获取相应文件
-                var localFolder = ApplicationData.Current.LocalFolder;
-                var localFile = await localFolder.GetFileAsync(fileName);
-
-                // 读取文本
-                using (var readStream = await localFile.OpenStreamForReadAsync())
-                {
-                    using (var reader = new StreamReader(readStream))
-                    {
-                        return reader.ReadToEnd();
-                    }
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                // 没找到指定的文件就返回null
-                return null;
-            }
-        }
-
-        // 删除本地数据
-        public static async void Delete(String fileName)
-        {
-            // 获取应用的本地文件夹，并获取相应文件
-            var localFolder = ApplicationData.Current.LocalFolder;
-            var localFile = await localFolder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+            return gpaInfo;
         }
     }
 }

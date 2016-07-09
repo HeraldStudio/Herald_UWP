@@ -26,7 +26,7 @@ namespace Herald_UWP
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    sealed partial class App : Application
+    sealed partial class BaseException : Application
     {
         public HeraldClient client { get; set; } = new HeraldClient();
 
@@ -34,7 +34,7 @@ namespace Herald_UWP
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
-        public App()
+        public BaseException()
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;

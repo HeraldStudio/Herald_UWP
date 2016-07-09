@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Herald_UWP.Utils;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Herald_UWP.View
 {
@@ -22,8 +16,9 @@ namespace Herald_UWP.View
     /// </summary>
     public sealed partial class CardPage : Page
     {
-        private App currentApp = Application.Current as App;
+        private BaseException currentApp = Application.Current as BaseException;
         private Card cardData;
+        private Card todayData;
 
         public CardPage()
         {
@@ -32,78 +27,118 @@ namespace Herald_UWP.View
             InitializeContent();
         }
 
-        private async void InitializeContent()
+        private async void InitializeContent(bool isRefresh = false)
         {
-            cardData = await currentApp.client.Query<Card>(
+            cardData = await currentApp.client.QueryRawData<Card>(
                 new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("timedelta", "7"),
-                });
+                }, isRefresh);
 
-            CardItemsCVS.Source = GetCardItemsGrouped();
+            todayData = await currentApp.client.QueryRawData<Card>(
+                new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("timedelta", "1"),
+                }, true, true);
+
+            CardItemsCVS.Source = await GetCardItemsGrouped();
         }
 
         private ObservableCollection<CardItem> GetCardItems()
         {
             var cardItems = new ObservableCollection<CardItem>();
-            string[] tempData;
-            foreach (CardItem item in cardData.content.detial)
+
+            if(todayData.content.detail.Length != 0)
             {
-                tempData = item.date.Split(' ');
-                item.date = tempData[0];
-                item.time = tempData[1];
-                if (item.system == "" && item.type == "银行转账")
-                    item.system = "银行转账";
+                foreach(CardItem item in todayData.content.detail)
+                {
+                    PreprocessCardItem(item);
+                    cardItems.Add(item);
+                }
+            }
+
+            foreach (CardItem item in cardData.content.detail)
+            {
+                PreprocessCardItem(item);
                 cardItems.Add(item);
             }
+
             return cardItems;
         }
 
-        private ObservableCollection<GroupInfoList> GetCardItemsGrouped()
+        // 对消费信息的预处理，分割日期以及修正银行转账
+        private void PreprocessCardItem(CardItem item)
+        {
+            string[] tempData;
+            tempData = item.date.Split(' ');
+            item.date = tempData[0];
+            item.time = tempData[1];
+            if (item.system == "" && item.type == "银行转帐")
+                item.system = "银行转帐";
+        }
+
+        private async Task<ObservableCollection<GroupInfoList>> GetCardItemsGrouped(bool isRefresh = true)
         {
             var groups = new ObservableCollection<GroupInfoList>();
+
+            if (!isRefresh)
+            {
+                groups = await currentApp.client.QueryGroupedData("CardItems");
+                if (groups != null)
+                    return groups;
+                else
+                    groups = new ObservableCollection<GroupInfoList>();
+            }
+
             var query = from item in GetCardItems()
                         group item by item.date into g
                         orderby g.Key descending
                         // GroupInfo包括日期、总收入、总支出，作为GroupInfo的key
-                        select new { GroupInfo = new { Date = g.Key, Income = g.Sum(o => CalculateIncome(o)), Outcome = g.Sum(o => CalculateOutcome(o)) }, Items = g };
+                        select new { GroupInfo = new JObject(new JProperty("Date", g.Key), new JProperty("Income", g.Sum(o => FindIncome(o))),new JProperty("Outcome", g.Sum(o => FindOutcome(o)))), Items = g };
 
             foreach (var g in query)
             {
                 var info = new GroupInfoList();
-                info.key = g.GroupInfo;
+                info.Key = g.GroupInfo;
                 foreach(var item in g.Items)
                 {
-                    info.Add(item);
+                    info.Items.Add(item);
                 }
                 groups.Add(info);
             }
-
+                        
+            currentApp.client.StoreGroupedData("CardItems", groups);
             return groups;
         }
 
-        private decimal CalculateIncome(CardItem cardItem)
+        private float FindIncome(CardItem cardItem)
         {
-            decimal result;
-            if (decimal.TryParse(cardItem.price, out result))
+            float result;
+            if (float.TryParse(cardItem.price, out result))
                 return result > 0 ? result : 0;
             else
                 return -9999;
         }
 
-        private decimal CalculateOutcome(CardItem cardItem)
+        private float FindOutcome(CardItem cardItem)
         {
-            decimal result;
-            if (decimal.TryParse(cardItem.price, out result))
+            float result;
+            if (float.TryParse(cardItem.price, out result))
                 return result < 0 ? -result : 0;
             else
                 return -9999;
         }
 
-        private void StackPanel_Loading(FrameworkElement sender, object args)
+        private void DecideDisplayIncome_Loading(FrameworkElement sender, object args)
         {
+            VisualTreeHelper.GetChild
             if (decimal.Parse(((TextBlock)VisualTreeHelper.GetChild(sender, 1)).Text) <= 0)
                 sender.Visibility = Visibility.Collapsed;
+        }
+
+        private void PullToRefreshInvoked(DependencyObject sender, object args)
+        {
+            InitializeContent(true);
         }
     }
 }

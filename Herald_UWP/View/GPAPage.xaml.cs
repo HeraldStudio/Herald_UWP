@@ -4,6 +4,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Herald_UWP.Utils;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace Herald_UWP.View
 {
@@ -12,7 +13,7 @@ namespace Herald_UWP.View
     /// </summary>
     public sealed partial class GPAPage : Page
     {
-        private App currentApp = Application.Current as App;
+        private BaseException currentApp = Application.Current as BaseException;
         private GPA GPAData;
 
         public GPAPage()
@@ -25,11 +26,11 @@ namespace Herald_UWP.View
         private async void InitializeContent(bool isRefresh = false)
         {
             // 获取GPA数据
-            GPAData = await currentApp.client.Query<GPA>(isRefresh : isRefresh);
+            GPAData = await currentApp.client.QueryRawData<GPA>(isRefresh : isRefresh);
 
             // GPA中content的第一项（绩点信息）绑定到DataContext，其它的绑定到ListView
             DataContext = GPAData.content[0];
-            GradesCVS.Source = GetGradesGrouped();
+            GradesCVS.Source = await GetGradesGrouped(isRefresh);
         }
 
         // 从GPAData中取出各科成绩
@@ -44,9 +45,14 @@ namespace Herald_UWP.View
         }
 
         // 获得按照学期分好组的成绩
-        private ObservableCollection<GroupInfoList> GetGradesGrouped()
+        private async Task<ObservableCollection<GroupInfoList>> GetGradesGrouped(bool isRefresh = true)
         {
             var groups = new ObservableCollection<GroupInfoList>();
+
+            if (!isRefresh)
+                if (await currentApp.client.QueryGroupedData("GPAItems") != null)
+                    return await currentApp.client.QueryGroupedData("GPAItems");
+
             var query = from item in GetGrades()
                         group item by item.semester into g
                         orderby g.Key descending
@@ -55,14 +61,15 @@ namespace Herald_UWP.View
             foreach (var g in query)
             {
                 var info = new GroupInfoList();
-                info.key = g.GroupName;
+                info.Key = g.GroupName;
                 foreach (var item in g.Items)
                 {
-                    info.Add(item);
+                    info.Items.Add(item);
                 }
                 groups.Add(info);
             }
 
+            currentApp.client.StoreGroupedData("GPAItems", groups);
             return groups;
         }
 

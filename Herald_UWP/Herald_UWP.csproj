@@ -100,7 +100,8 @@
     </Compile>
     <Compile Include="Utils\HeraldClient.cs" />
     <Compile Include="Utils\HeraldHttpUtil.cs" />
-    <Compile Include="Utils\HeraldJsonType.cs" />
+    <Compile Include="Utils\HeraldOther.cs" />
+    <Compile Include="Utils\HeraldModels.cs" />
     <Compile Include="View\CardPage.xaml.cs">
       <DependentUpon>CardPage.xaml</DependentUpon>
     </Compile>

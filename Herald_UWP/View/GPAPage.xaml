@@ -11,7 +11,7 @@
 
     <Page.Resources>
         <!-- 用于分组的数据源 -->
-        <CollectionViewSource x:Name="GradesCVS"  IsSourceGrouped="True"/>
+        <CollectionViewSource x:Name="GradesCVS"  IsSourceGrouped="True" ItemsPath="Items"/>
 
         <!-- 显示成绩的ListView模板 -->
         <DataTemplate x:Name="GradeListViewTemplate" x:DataType="data:GPAContent">
@@ -50,18 +50,17 @@
         </DataTemplate>
     </Page.Resources>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <pr:PullToRefreshBox RefreshInvoked="PullToRefreshInvoked">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height= "2*"/>
-                    <RowDefinition Height= "0.5*"/>
-                    <RowDefinition Height= "8*"/>
-                </Grid.RowDefinitions>
+    <pr:PullToRefreshBox RefreshInvoked="PullToRefreshInvoked">
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height= "2*"/>
+                <RowDefinition Height= "0.5*"/>
+                <RowDefinition Height= "8*"/>
+            </Grid.RowDefinitions>
 
-                <!--显示绩点的背景和中间的线条-->
-                <Rectangle Grid.Row="0" Grid.RowSpan="2" Fill="#00CC6A"/>
-                <Line Grid.Row="0"
+            <!--显示绩点的背景和中间的线条-->
+            <Rectangle Grid.Row="0" Grid.RowSpan="2" Fill="#00CC6A"/>
+            <Line Grid.Row="0"
                   Margin="0,20,0,5"
                   Stretch="Fill"
                   X1="0" Y1="1"
@@ -70,115 +69,110 @@
                   Stroke="White"
                   StrokeThickness="1"/>
 
-                <!--计算的时间-->
-                <StackPanel Grid.Row="1" 
+            <!--计算的时间-->
+            <StackPanel Grid.Row="1" 
                         Orientation="Horizontal" 
                         HorizontalAlignment="Center" 
                         VerticalAlignment="Center">
-                    <TextBlock Foreground="White" 
-                           FontSize="10"
-                           Text="数据取自教务处，计算时间："/>
-                    <TextBlock Foreground="White"
-                           FontSize="10"
-                           Text="{Binding calculateTime}"/>
+                <TextBlock Foreground="White" FontSize="10" Text="数据取自教务处，计算时间："/>
+                <TextBlock Foreground="White" FontSize="10" Text="{Binding calculateTime}"/>
+            </StackPanel>
+
+            <!--平均绩点和首修绩点-->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" 
+                            Margin="0,25,0,0"
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center">
+                    <TextBlock Text="{Binding gpa}"
+                               Foreground="White" 
+                               FontSize="30" 
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Foreground="White" Text="平均绩点"/>
                 </StackPanel>
-
-                <!--平均绩点和首修绩点-->
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" 
+                <StackPanel Grid.Column="1"  
                             Margin="0,25,0,0"
                             HorizontalAlignment="Center" 
                             VerticalAlignment="Center">
-                        <TextBlock Text="{Binding gpa}"
+                    <TextBlock Text="{Binding gpaWithoutRevamp}"
                                Foreground="White" 
                                FontSize="30" 
                                HorizontalAlignment="Center"/>
-                        <TextBlock Foreground="White" Text="平均绩点"/>
-                    </StackPanel>
-                    <StackPanel Grid.Column="1"  
-                            Margin="0,25,0,0"
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Center">
-                        <TextBlock Text="{Binding gpaWithoutRevamp}"
-                               Foreground="White" 
-                               FontSize="30" 
-                               HorizontalAlignment="Center"/>
-                        <TextBlock Foreground="White" Text="首修绩点"/>
-                    </StackPanel>
-                </Grid>
-
-                <!--各科成绩-->
-                <SemanticZoom Grid.Row="2">
-                    <!-- 索引视图 -->
-                    <SemanticZoom.ZoomedOutView>
-                        <GridView ItemsSource="{x:Bind GradesCVS.View.CollectionGroups}">
-                            <GridView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <ItemsWrapGrid MaximumRowsOrColumns="2" 
-                                           VerticalAlignment="Top" 
-                                           Orientation="Horizontal"
-                                           HorizontalAlignment="Center"
-                                           Margin="0,20,0,20"/>
-                                </ItemsPanelTemplate>
-                            </GridView.ItemsPanel>
-                            <GridView.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Background="#00CC6A" Margin="20">
-                                        <TextBlock Text="{Binding Group.key}"
-                                           Foreground="White"
-                                           FontSize="30"
-                                           Padding="10,5,10,5"/>
-                                    </Border>
-                                </DataTemplate>
-                            </GridView.ItemTemplate>
-                        </GridView>
-                    </SemanticZoom.ZoomedOutView>
-
-                    <!-- 具体信息 -->
-                    <SemanticZoom.ZoomedInView>
-                        <ListView Background="#1000"
-                                  ItemTemplate="{StaticResource GradeListViewTemplate}"
-                                  ItemsSource="{x:Bind GradesCVS.View, Mode=OneWay}"
-                                  SelectionMode="None">
-                            <ListView.Resources>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <!-- 取消掉默认样式，包括点击动画 -->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="ListViewItem">
-                                                <ContentPresenter/>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </ListView.Resources>
-
-                            <ListView.GroupStyle>
-                                <GroupStyle>
-                                    <GroupStyle.HeaderTemplate>
-                                        <DataTemplate x:DataType="data:GroupInfoList">
-                                            <TextBlock Text="{x:Bind key}" Style="{ThemeResource TitleTextBlockStyle}"/>
-                                        </DataTemplate>
-                                    </GroupStyle.HeaderTemplate>
-                                </GroupStyle>
-                            </ListView.GroupStyle>
-
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <!-- 如果是默认的ItemsPanel则对于GroupStyle的Panel的修改不起作用 -->
-                                    <!-- 但不是默认的很多默认的样式都没有了，暂时就这样吧 -->
-                                    <ItemsStackPanel Orientation="Vertical" AreStickyGroupHeadersEnabled="False"/>
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                        </ListView>
-                    </SemanticZoom.ZoomedInView>
-                </SemanticZoom>
+                    <TextBlock Foreground="White" Text="首修绩点"/>
+                </StackPanel>
             </Grid>
-        </pr:PullToRefreshBox>
-    </Grid>
+
+            <!--各科成绩-->
+            <SemanticZoom Grid.Row="2">
+                <!-- 索引视图 -->
+                <SemanticZoom.ZoomedOutView>
+                    <GridView ItemsSource="{x:Bind GradesCVS.View.CollectionGroups}">
+                        <GridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsWrapGrid MaximumRowsOrColumns="2" 
+                                               VerticalAlignment="Top" 
+                                               Orientation="Horizontal"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,20,0,20"/>
+                            </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#00CC6A" Margin="20">
+                                    <TextBlock Text="{Binding Group.Key}"
+                                               Foreground="White"
+                                               FontSize="30"
+                                               Padding="10,5,10,5"/>
+                                </Border>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </SemanticZoom.ZoomedOutView>
+
+                <!-- 具体信息 -->
+                <SemanticZoom.ZoomedInView>
+                    <ListView Background="#1000"
+                              ItemTemplate="{StaticResource GradeListViewTemplate}"
+                              ItemsSource="{x:Bind GradesCVS.View, Mode=OneWay}"
+                              SelectionMode="None">
+                        <ListView.Resources>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <!-- 取消掉默认样式，包括点击动画 -->
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListViewItem">
+                                            <ContentPresenter/>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListView.Resources>
+
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate x:DataType="data:GroupInfoList">
+                                        <TextBlock Text="{x:Bind Key}" Style="{ThemeResource TitleTextBlockStyle}"/>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
+
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <!-- 如果是默认的ItemsPanel则对于GroupStyle的Panel的修改不起作用 -->
+                                <!-- 但不是默认的很多默认的样式都没有了，暂时就这样吧 -->
+                                <ItemsStackPanel Orientation="Vertical" AreStickyGroupHeadersEnabled="False"/>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                    </ListView>
+                </SemanticZoom.ZoomedInView>
+            </SemanticZoom>
+        </Grid>
+    </pr:PullToRefreshBox>
 </Page>

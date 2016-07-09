@@ -6,12 +6,14 @@
     xmlns:data="using:Herald_UWP.Utils"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pr="using:PullToRefresh.UWP"
     mc:Ignorable="d">
 
     <Page.Resources>
-        <CollectionViewSource x:Name="CardItemsCVS" IsSourceGrouped="True"/>
+        <CollectionViewSource x:Name="CardItemsCVS" IsSourceGrouped="True" ItemsPath="Items"/>
         
-        <DataTemplate x:Name="CardListViewTemplate" x:DataType="data:CardItem">
+        <!-- 消费信息ListViewItem的模板 -->
+        <DataTemplate x:Name="CardListViewItemTemplate" x:DataType="data:CardItem">
             <Grid Background="White" Padding="10,5,10,5" BorderBrush="LightGray" BorderThickness="0,0,0,1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -60,6 +62,7 @@
             </Grid>
         </DataTemplate>
 
+        <!-- 消费信息ListViewHeader的模板 -->
         <DataTemplate x:Name="CardListViewHeaderTemplate" x:DataType="data:GroupInfoList">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -67,41 +70,43 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="{Binding key.Date}" FontSize="15" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
-                <StackPanel x:Name="IncomeTextPanel" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Loading="StackPanel_Loading">
+                <TextBlock Grid.Column="0" Text="{Binding Key.Date}" FontSize="15" HorizontalAlignment="Left"/>
+                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" Loading="DecideDisplayIncome_Loading">
                     <TextBlock Text="收入：" FontSize="15"/>
-                    <TextBlock x:Name="IncomeTextBlock" Text="{Binding key.Income}" FontSize="15"/>
+                    <TextBlock Text="{Binding Key.Income}" FontSize="15"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right">
                     <TextBlock Text="支出：" FontSize="15"/>
-                    <TextBlock Text="{Binding key.Outcome}" FontSize="15"/>
+                    <TextBlock Text="{Binding Key.Outcome}" FontSize="15"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>
     </Page.Resources>
-    
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListView Background="#1000"
-                  ItemTemplate="{StaticResource CardListViewTemplate}" 
-                  ItemsSource="{x:Bind CardItemsCVS.View, Mode=OneWay}"
-                  SelectionMode="None">
-            <ListView.Resources>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                    <!-- 取消掉默认样式，包括点击动画 -->
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListViewItem">
-                                <ContentPresenter/>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListView.Resources>
+
+    <pr:PullToRefreshBox RefreshInvoked="PullToRefreshInvoked">
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <ListView Background="#1000"
+                      ItemTemplate="{StaticResource CardListViewItemTemplate}" 
+                      ItemsSource="{x:Bind CardItemsCVS.View, Mode=OneWay}"
+                      SelectionMode="None">
+                <ListView.Resources>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <!-- 取消掉默认样式，包括点击动画 -->
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <ContentPresenter/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.Resources>
             
-            <ListView.GroupStyle>
-                <GroupStyle HeaderTemplate="{StaticResource CardListViewHeaderTemplate}"/>
-            </ListView.GroupStyle>
-        </ListView>
-    </Grid>
+                <ListView.GroupStyle>
+                    <GroupStyle HeaderTemplate="{StaticResource CardListViewHeaderTemplate}"/>
+                </ListView.GroupStyle>
+            </ListView>
+        </Grid>
+    </pr:PullToRefreshBox>
 </Page>
