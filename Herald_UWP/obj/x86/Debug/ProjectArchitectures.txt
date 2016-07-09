@@ -1,1 +1,0 @@
-D:\Documents\Visual Studio 2015\Projects\Herald_UWP\Herald_UWP\Herald_UWP.csproj;x86
