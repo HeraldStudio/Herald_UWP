@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Herald_UWP.Utils;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Windows.UI.Xaml.Media;
 
 namespace Herald_UWP.View
 {
@@ -18,127 +19,73 @@ namespace Herald_UWP.View
     {
         private BaseException currentApp = Application.Current as BaseException;
         private Card cardData;
-        private Card todayData;
 
         public CardPage()
         {
             InitializeComponent();
-            NavigationCacheMode = NavigationCacheMode.Enabled;  // 回到页面之后还是之前访问的状态
+            NavigationCacheMode = NavigationCacheMode.Enabled;
             InitializeContent();
         }
 
-        private async void InitializeContent(bool isRefresh = false)
+        private async void InitializeContent()
         {
-            cardData = await currentApp.client.QueryRawData<Card>(
+            cardData = await currentApp.client.QueryForData<Card>(
                 new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("timedelta", "7"),
-                }, isRefresh);
+                });
 
-            todayData = await currentApp.client.QueryRawData<Card>(
+            Card todayData = await currentApp.client.QueryForData<Card>(
                 new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("timedelta", "1"),
-                }, true, true);
+                }, true, false);
 
-            CardItemsCVS.Source = await GetCardItemsGrouped();
+            cardData.CardDailys.InsertRange(0, todayData.CardDailys);
+
+            CardItemsCVS.Source = cardData.CardDailys;
         }
 
-        private ObservableCollection<CardItem> GetCardItems()
+        private async void PullToRefreshInvoked(DependencyObject sender, object args)
         {
-            var cardItems = new ObservableCollection<CardItem>();
+            // 计算有多少天没更新数据了
+            string[] latestDate = cardData.CardDailys.First().Date.Split('/');
+            DateTime oldDate = new DateTime(int.Parse(latestDate[0]), int.Parse(latestDate[1]), int.Parse(latestDate[2]));
+            DateTime newDate = DateTime.Now.ToLocalTime();
+            int gapDay = (newDate - oldDate).Days;
 
-            if(todayData.content.detail.Length != 0)
+            // 可能上一次跟新的时候当天数据没有获取完，所以删掉重新获取
+            cardData.CardDailys.RemoveAt(0);
+
+            // gapDay不为零说明上次更新不是今天，要获取今天之前的内容
+            if (gapDay != 0)
             {
-                foreach(CardItem item in todayData.content.detail)
+                Card newCardData = await currentApp.client.QueryForData<Card>(
+                    new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("timedelta", gapDay.ToString()),
+                    }, enableCache : false);
+                cardData.CardDailys.InsertRange(0, newCardData.CardDailys);
+            }
+
+            // 但不管上次更新是在什么时候，当天的信息都要重新获取
+            Card todayData = await currentApp.client.QueryForData<Card>(
+                new List<KeyValuePair<string, string>>
                 {
-                    PreprocessCardItem(item);
-                    cardItems.Add(item);
-                }
-            }
+                    new KeyValuePair<string, string>("timedelta", "1"),
+                }, true, false);
+            cardData.CardDailys.InsertRange(0, todayData.CardDailys);
 
-            foreach (CardItem item in cardData.content.detail)
-            {
-                PreprocessCardItem(item);
-                cardItems.Add(item);
-            }
-
-            return cardItems;
+            // 最后更新本地文件的内容
+            FileSystem.Write("Card.data", JsonConvert.SerializeObject(cardData));
+            // 重新绑定数据
+            CardItemsCVS.Source = cardData.CardDailys;
         }
 
-        // 对消费信息的预处理，分割日期以及修正银行转账
-        private void PreprocessCardItem(CardItem item)
+        private void DecideIncomeShowOnLoading(FrameworkElement sender, object args)
         {
-            string[] tempData;
-            tempData = item.date.Split(' ');
-            item.date = tempData[0];
-            item.time = tempData[1];
-            if (item.system == "" && item.type == "银行转帐")
-                item.system = "银行转帐";
-        }
-
-        private async Task<ObservableCollection<GroupInfoList>> GetCardItemsGrouped(bool isRefresh = true)
-        {
-            var groups = new ObservableCollection<GroupInfoList>();
-
-            if (!isRefresh)
-            {
-                groups = await currentApp.client.QueryGroupedData("CardItems");
-                if (groups != null)
-                    return groups;
-                else
-                    groups = new ObservableCollection<GroupInfoList>();
-            }
-
-            var query = from item in GetCardItems()
-                        group item by item.date into g
-                        orderby g.Key descending
-                        // GroupInfo包括日期、总收入、总支出，作为GroupInfo的key
-                        select new { GroupInfo = new JObject(new JProperty("Date", g.Key), new JProperty("Income", g.Sum(o => FindIncome(o))),new JProperty("Outcome", g.Sum(o => FindOutcome(o)))), Items = g };
-
-            foreach (var g in query)
-            {
-                var info = new GroupInfoList();
-                info.Key = g.GroupInfo;
-                foreach(var item in g.Items)
-                {
-                    info.Items.Add(item);
-                }
-                groups.Add(info);
-            }
-                        
-            currentApp.client.StoreGroupedData("CardItems", groups);
-            return groups;
-        }
-
-        private float FindIncome(CardItem cardItem)
-        {
-            float result;
-            if (float.TryParse(cardItem.price, out result))
-                return result > 0 ? result : 0;
-            else
-                return -9999;
-        }
-
-        private float FindOutcome(CardItem cardItem)
-        {
-            float result;
-            if (float.TryParse(cardItem.price, out result))
-                return result < 0 ? -result : 0;
-            else
-                return -9999;
-        }
-
-        private void DecideDisplayIncome_Loading(FrameworkElement sender, object args)
-        {
-            VisualTreeHelper.GetChild
-            if (decimal.Parse(((TextBlock)VisualTreeHelper.GetChild(sender, 1)).Text) <= 0)
+            if (float.Parse(((TextBlock)VisualTreeHelper.GetChild(sender, 1)).Text) <= 0)
                 sender.Visibility = Visibility.Collapsed;
-        }
-
-        private void PullToRefreshInvoked(DependencyObject sender, object args)
-        {
-            InitializeContent(true);
         }
     }
 }

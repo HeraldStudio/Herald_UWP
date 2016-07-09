@@ -92,7 +92,7 @@ namespace Herald_UWP.Utils
     //    [DataMember(Order = 0)]
     //    public GPAContent[] content { get; set; }
     //}
-    
+
     //[DataContract]
     //public class GPAContent
     //{
@@ -119,36 +119,33 @@ namespace Herald_UWP.Utils
     [JsonObject]
     public class GPA
     {
-        [JsonProperty(Order = 0)]
-        public string AverageGPA { set; get; }
-        [JsonProperty(Order = 1)]
-        public string FirstGPA { set; get; }
-        [JsonProperty(Order = 2)]
-        public string CalTime { set; get; }
-        [JsonProperty(Order = 3)]
-        public GPASemester[] Semesters { set; get; }
+        [JsonProperty("gpa")]
+        public string AverageGPA{set; get;}
+        [JsonProperty("gpa without revamp")]
+        public string FirstGPA{set; get;}
+        [JsonProperty("calculate time")]
+        public string CalTime{set; get;}
+        public List<GPASemester> Semesters { set; get; } = new List<GPASemester>();
     }
 
-    [JsonArray]
+    [JsonObject]
     public class GPASemester
     {
-        [JsonProperty(Order = 0)]
-        public string Semester { set; get; }
-        [JsonProperty(Order = 1)]
-        public GPAGrade[] Grades { set; get; }
+        public string Semester{set; get;}
+        public List<GPAGrade> Grades { set; get; } = new List<GPAGrade>();
     }
 
-    [JsonArray]
+    [JsonObject]
     public class GPAGrade
     {
-        [JsonProperty(Order = 0)]
-        public string Name { set; get; }
-        [JsonProperty(Order = 1)]
-        public string Credit { set; get; }
-        [JsonProperty(Order = 2)]
-        public string Score { set; get; }
-        [JsonProperty(Order = 3)]
-        public string Type { set; get; }
+        [JsonProperty("name")]
+        public string Name{set; get;}
+        [JsonProperty("credit")]
+        public string Credit{set; get;}
+        [JsonProperty("score")]
+        public string Score{set; get;}
+        [JsonProperty("type")]
+        public string Type{set; get;}
     }
 
     //// 跑操信息概要
@@ -246,47 +243,40 @@ namespace Herald_UWP.Utils
     //}
 
     /// <summary>
-    /// 下面三个都是一卡通相关的类
-    /// 因为一卡通信息的查询接口返回的是近N天的消费信息
-    /// 为了更方便的更新，其中用到数组的地方都换成了List
+    /// 三个一卡通相关的类
     /// </summary>
     [JsonObject]
     public class Card
     {
-        [JsonProperty(Order = 0)]
-        public string State { set; get; }
-        [JsonProperty(Order = 1)]
-        public float Left { set; get; }
-        [JsonProperty(Order = 2)]
+        [JsonProperty("state")]
+        public string State{set; get;}
+        [JsonProperty("left")]
+        public float Left{set; get;}
         public List<CardDaily> CardDailys { set; get; } = new List<CardDaily>();
     }
 
-    [JsonArray]
+    [JsonObject]
     public class CardDaily
     {
-        [JsonProperty(Order = 0)]
-        public string Date { set; get; }
-        [JsonProperty(Order = 1)]
-        public float Income { set; get; }
-        [JsonProperty(Order = 2)]
-        public float Outcome { set; get; }
-        [JsonProperty(Order = 3)]
+        [JsonProperty("date")]
+        public string Date{set; get;}
+        public float Income{set; get;}
+        public float Outcome{set; get;}
         public List<CardDailyDetail> CardDailyDetails { set; get; } = new List<CardDailyDetail>();
     }
 
-    [JsonArray]
+    [JsonObject]
     public class CardDailyDetail
     {
-        [JsonProperty(Order = 0)]
-        public string System { set; get; }
-        [JsonProperty(Order = 1)]
-        public string Type { set; get; }
-        [JsonProperty(Order = 2)]
-        public string Time { set; get; }
-        [JsonProperty(Order = 3)]
-        public string Price { set; get; }
-        [JsonProperty(Order = 4)]
-        public string Left { set; get; }
+        [JsonProperty("system")]
+        public string System{set; get;}
+        [JsonProperty("type")]
+        public string Type{set; get;}
+        public string Time{set; get;}
+        [JsonProperty("price")]
+        public string Price{set; get;}
+        [JsonProperty("left")]
+        public string Left{set; get;}
     }
 
     //// 人文讲座

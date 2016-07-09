@@ -22,39 +22,27 @@ namespace Herald_UWP.Utils
         public const string DEAUTH = AUTH_URL + "deauth";   // 取消授权
 
         // 查询相关的URL
-        private const string BASE_URL = "http://www.heraldstudio.com/api/";
-        public const string SRTP = BASE_URL + "srtp";                // 查询SRTP
-        public const string CURRICULUM = BASE_URL + "curriculum";    // 查询课程表
-        public const string GPA = BASE_URL + "gpa";                  // 查询绩点
-        public const string PE = BASE_URL + "pe";                    // 查询跑操
-        public const string PE_DETAIL = BASE_URL + "pedetail";        // 查询跑操记录
-        public const string NIC = BASE_URL + "nic";                  // 查询校园网信息
-        public const string CARD = BASE_URL + "card";                // 查询一卡通
-        public const string LECTURE = BASE_URL + "lecture";          // 查询人文讲座
-        public const string LIBRARY = BASE_URL + "library";          // 查询图书馆借阅
-        public const string SEARCH = BASE_URL + "search";            // 图书搜索
+        private const string API_URL = "http://www.heraldstudio.com/api/";
+        public const string SRTP = API_URL + "srtp";                // 查询SRTP
+        public const string Curriculum = API_URL + "curriculum";    // 查询课程表
+        public const string GPA = API_URL + "gpa";                  // 查询绩点
+        public const string PE = API_URL + "pe";                    // 查询跑操
+        public const string PEDetail = API_URL + "pedetail";        // 查询跑操记录
+        public const string NIC = API_URL + "nic";                  // 查询校园网信息
+        public const string Card = API_URL + "card";                // 查询一卡通
+        public const string Lecture = API_URL + "lecture";          // 查询人文讲座
+        public const string Library = API_URL + "library";          // 查询图书馆借阅
+        public const string Search = API_URL + "search";            // 图书搜索
 
-        public const string TERM = BASE_URL + "term";                // 查询学期列表
-        public const string SIDEBAR = BASE_URL + "sidebar";          // 查询课程列表
-        public const string SIMSIMI = BASE_URL + "simsimi";          // 调戏小猴
-        public const string RENEW = BASE_URL + "renew";              // 图书馆续借
+        public const string TERM = API_URL + "term";                // 查询学期列表
+        public const string SIDEBAR = API_URL + "sidebar";          // 查询课程列表
+        public const string SIMSIMI = API_URL + "simsimi";          // 调戏小猴
+        public const string RENEW = API_URL + "renew";              // 图书馆续借
     }
 
     // 文件访问
     public static class FileSystem
     {
-        // 将Json格式的string转换为相应的封装类
-        public static T ParseJson<T>(string jsonString)
-        {
-            return JsonConvert.DeserializeObject<T>(jsonString);
-        }
-
-        // 将对象转换为Json格式的string
-        public static string ToJson(object obj)
-        {
-            return JsonConvert.SerializeObject(obj);
-        }
-
         // 写入本地数据
         public static async void Write(string fileName, string data)
         {

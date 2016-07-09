@@ -11,10 +11,10 @@
 
     <Page.Resources>
         <!-- 用于分组的数据源 -->
-        <CollectionViewSource x:Name="GradesCVS"  IsSourceGrouped="True" ItemsPath="Items"/>
+        <CollectionViewSource x:Name="GradesCVS"  IsSourceGrouped="True" ItemsPath="Grades"/>
 
         <!-- 显示成绩的ListView模板 -->
-        <DataTemplate x:Name="GradeListViewTemplate" x:DataType="data:GPAContent">
+        <DataTemplate x:Name="GradeListViewTemplate" x:DataType="data:GPAGrade">
             <Grid Background="White" Padding="10,5,10,5" BorderBrush="LightGray" BorderThickness="0,0,0,1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width = "*"/>
@@ -25,7 +25,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="{x:Bind name}"
+                <TextBlock Text="{x:Bind Name}"
                            Grid.Row="0"
                            Grid.Column="0"
                            Padding="5,0,0,0"
@@ -35,11 +35,11 @@
                             Grid.Row="1"    
                             Grid.Column="0"
                             Padding="5,0,0,0">
-                    <TextBlock Text="{x:Bind type}" Padding="0,0,10,0"/>
+                    <TextBlock Text="{x:Bind Type}" Padding="0,0,10,0"/>
                     <TextBlock Text="绩点："/>
-                    <TextBlock Text="{x:Bind credit}"/>
+                    <TextBlock Text="{x:Bind Credit}"/>
                 </StackPanel>
-                <TextBlock Text="{x:Bind score}"
+                <TextBlock Text="{x:Bind Score}"
                            Grid.RowSpan="2"
                            Grid.Column="1"
                            Foreground="#10893E"
@@ -75,7 +75,7 @@
                         HorizontalAlignment="Center" 
                         VerticalAlignment="Center">
                 <TextBlock Foreground="White" FontSize="10" Text="数据取自教务处，计算时间："/>
-                <TextBlock Foreground="White" FontSize="10" Text="{Binding calculateTime}"/>
+                <TextBlock Foreground="White" FontSize="10" Text="{Binding CalTime}"/>
             </StackPanel>
 
             <!--平均绩点和首修绩点-->
@@ -88,7 +88,7 @@
                             Margin="0,25,0,0"
                             HorizontalAlignment="Center" 
                             VerticalAlignment="Center">
-                    <TextBlock Text="{Binding gpa}"
+                    <TextBlock Text="{Binding AverageGPA}"
                                Foreground="White" 
                                FontSize="30" 
                                HorizontalAlignment="Center"/>
@@ -98,7 +98,7 @@
                             Margin="0,25,0,0"
                             HorizontalAlignment="Center" 
                             VerticalAlignment="Center">
-                    <TextBlock Text="{Binding gpaWithoutRevamp}"
+                    <TextBlock Text="{Binding FirstGPA}"
                                Foreground="White" 
                                FontSize="30" 
                                HorizontalAlignment="Center"/>
@@ -110,7 +110,7 @@
             <SemanticZoom Grid.Row="2">
                 <!-- 索引视图 -->
                 <SemanticZoom.ZoomedOutView>
-                    <GridView ItemsSource="{x:Bind GradesCVS.View.CollectionGroups}">
+                    <GridView ItemsSource="{x:Bind GradesCVS.View.CollectionGroups, Mode=OneWay}">
                         <GridView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <ItemsWrapGrid MaximumRowsOrColumns="2" 
@@ -123,7 +123,7 @@
                         <GridView.ItemTemplate>
                             <DataTemplate>
                                 <Border Background="#00CC6A" Margin="20">
-                                    <TextBlock Text="{Binding Group.Key}"
+                                    <TextBlock Text="{Binding Group.Semester}"
                                                Foreground="White"
                                                FontSize="30"
                                                Padding="10,5,10,5"/>
@@ -156,8 +156,8 @@
                         <ListView.GroupStyle>
                             <GroupStyle>
                                 <GroupStyle.HeaderTemplate>
-                                    <DataTemplate x:DataType="data:GroupInfoList">
-                                        <TextBlock Text="{x:Bind Key}" Style="{ThemeResource TitleTextBlockStyle}"/>
+                                    <DataTemplate x:DataType="data:GPASemester">
+                                        <TextBlock Text="{x:Bind Semester}" Style="{ThemeResource TitleTextBlockStyle}"/>
                                     </DataTemplate>
                                 </GroupStyle.HeaderTemplate>
                             </GroupStyle>

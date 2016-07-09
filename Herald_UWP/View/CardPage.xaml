@@ -10,10 +10,10 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <CollectionViewSource x:Name="CardItemsCVS" IsSourceGrouped="True" ItemsPath="Items"/>
+        <CollectionViewSource x:Name="CardItemsCVS" IsSourceGrouped="True" ItemsPath="CardDailyDetails"/>
         
         <!-- 消费信息ListViewItem的模板 -->
-        <DataTemplate x:Name="CardListViewItemTemplate" x:DataType="data:CardItem">
+        <DataTemplate x:Name="CardListViewItemTemplate" x:DataType="data:CardDailyDetail">
             <Grid Background="White" Padding="10,5,10,5" BorderBrush="LightGray" BorderThickness="0,0,0,1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -25,21 +25,21 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="{x:Bind system}"
+                <TextBlock Text="{x:Bind System}"
                            Grid.Row="0"
                            Grid.Column="0"
                            Padding="5,0,0,0"
                            Foreground="#1081CA"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"/>
-                <TextBlock Text="{x:Bind type}"
+                <TextBlock Text="{x:Bind Type}"
                            Grid.Row="1"
                            Grid.Column="0"
                            Padding="5,0,0,0"
                            FontSize="13"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"/>
-                <TextBlock Text="{x:Bind time}"
+                <TextBlock Text="{x:Bind Time}"
                            Grid.Row="2"
                            Grid.Column="0"
                            Padding="5,0,0,0"
@@ -50,11 +50,11 @@
                             Grid.Column="1"
                             Grid.RowSpan="3"
                             VerticalAlignment="Center">
-                    <TextBlock Text="{x:Bind price}"
+                    <TextBlock Text="{x:Bind Price}"
                                Padding="0,0,5,0"
                                Foreground="#1081CA" 
                                HorizontalAlignment="Right"/>
-                    <TextBlock Text="{x:Bind left}" 
+                    <TextBlock Text="{x:Bind Left}" 
                                Padding="0,0,5,0" 
                                FontSize="13"
                                HorizontalAlignment="Right"/>
@@ -63,21 +63,21 @@
         </DataTemplate>
 
         <!-- 消费信息ListViewHeader的模板 -->
-        <DataTemplate x:Name="CardListViewHeaderTemplate" x:DataType="data:GroupInfoList">
+        <DataTemplate x:Name="CardListViewHeaderTemplate" x:DataType="data:CardDaily">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="{Binding Key.Date}" FontSize="15" HorizontalAlignment="Left"/>
-                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" Loading="DecideDisplayIncome_Loading">
+                <TextBlock Grid.Column="0" Text="{x:Bind Date}" FontSize="15" HorizontalAlignment="Left"/>
+                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Center" Loading="DecideIncomeShowOnLoading">
                     <TextBlock Text="收入：" FontSize="15"/>
-                    <TextBlock Text="{Binding Key.Income}" FontSize="15"/>
+                    <TextBlock Text="{x:Bind Income}" FontSize="15"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right">
                     <TextBlock Text="支出：" FontSize="15"/>
-                    <TextBlock Text="{Binding Key.Outcome}" FontSize="15"/>
+                    <TextBlock Text="{x:Bind Outcome}" FontSize="15"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>

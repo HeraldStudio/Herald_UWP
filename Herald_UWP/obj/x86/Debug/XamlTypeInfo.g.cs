@@ -11,7 +11,7 @@
 
 namespace Herald_UWP
 {
-    public partial class App : global::Windows.UI.Xaml.Markup.IXamlMetadataProvider
+    public partial class BaseException : global::Windows.UI.Xaml.Markup.IXamlMetadataProvider
     {
     private global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlTypeInfoProvider _provider;
 
@@ -67,6 +67,18 @@ namespace Herald_UWP.Herald_UWP_XamlTypeInfo
             {
                 xamlType = CreateXamlType(typeIndex);
             }
+            var userXamlType = xamlType as global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType;
+            if(xamlType == null || (userXamlType != null && userXamlType.IsReturnTypeStub && !userXamlType.IsLocalType))
+            {
+                global::Windows.UI.Xaml.Markup.IXamlType libXamlType = CheckOtherMetadataProvidersForType(type);
+                if (libXamlType != null)
+                {
+                    if(libXamlType.IsConstructible || xamlType == null)
+                    {
+                        xamlType = libXamlType;
+                    }
+                }
+            }
             if (xamlType != null)
             {
                 _xamlTypeCacheByName.Add(xamlType.FullName, xamlType);
@@ -90,6 +102,18 @@ namespace Herald_UWP.Herald_UWP_XamlTypeInfo
             if(typeIndex != -1)
             {
                 xamlType = CreateXamlType(typeIndex);
+            }
+            var userXamlType = xamlType as global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType;
+            if(xamlType == null || (userXamlType != null && userXamlType.IsReturnTypeStub && !userXamlType.IsLocalType))
+            {
+                global::Windows.UI.Xaml.Markup.IXamlType libXamlType = CheckOtherMetadataProvidersForName(typeName);
+                if (libXamlType != null)
+                {
+                    if(libXamlType.IsConstructible || xamlType == null)
+                    {
+                        xamlType = libXamlType;
+                    }
+                }
             }
             if (xamlType != null)
             {
@@ -132,19 +156,29 @@ namespace Herald_UWP.Herald_UWP_XamlTypeInfo
 
         private void InitTypeTables()
         {
-            _typeNameTable = new string[5];
-            _typeNameTable[0] = "Herald_UWP.View.GPAPage";
-            _typeNameTable[1] = "Windows.UI.Xaml.Controls.Page";
-            _typeNameTable[2] = "Windows.UI.Xaml.Controls.UserControl";
-            _typeNameTable[3] = "Herald_UWP.View.MainPage";
-            _typeNameTable[4] = "Herald_UWP.View.UserLogin";
+            _typeNameTable = new string[10];
+            _typeNameTable[0] = "PullToRefresh.UWP.PullToRefreshBox";
+            _typeNameTable[1] = "Windows.UI.Xaml.Controls.ContentControl";
+            _typeNameTable[2] = "Windows.UI.Xaml.DataTemplate";
+            _typeNameTable[3] = "Double";
+            _typeNameTable[4] = "Herald_UWP.View.CardPage";
+            _typeNameTable[5] = "Windows.UI.Xaml.Controls.Page";
+            _typeNameTable[6] = "Windows.UI.Xaml.Controls.UserControl";
+            _typeNameTable[7] = "Herald_UWP.View.GPAPage";
+            _typeNameTable[8] = "Herald_UWP.View.MainPage";
+            _typeNameTable[9] = "Herald_UWP.View.UserLogin";
 
-            _typeTable = new global::System.Type[5];
-            _typeTable[0] = typeof(global::Herald_UWP.View.GPAPage);
-            _typeTable[1] = typeof(global::Windows.UI.Xaml.Controls.Page);
-            _typeTable[2] = typeof(global::Windows.UI.Xaml.Controls.UserControl);
-            _typeTable[3] = typeof(global::Herald_UWP.View.MainPage);
-            _typeTable[4] = typeof(global::Herald_UWP.View.UserLogin);
+            _typeTable = new global::System.Type[10];
+            _typeTable[0] = typeof(global::PullToRefresh.UWP.PullToRefreshBox);
+            _typeTable[1] = typeof(global::Windows.UI.Xaml.Controls.ContentControl);
+            _typeTable[2] = typeof(global::Windows.UI.Xaml.DataTemplate);
+            _typeTable[3] = typeof(global::System.Double);
+            _typeTable[4] = typeof(global::Herald_UWP.View.CardPage);
+            _typeTable[5] = typeof(global::Windows.UI.Xaml.Controls.Page);
+            _typeTable[6] = typeof(global::Windows.UI.Xaml.Controls.UserControl);
+            _typeTable[7] = typeof(global::Herald_UWP.View.GPAPage);
+            _typeTable[8] = typeof(global::Herald_UWP.View.MainPage);
+            _typeTable[9] = typeof(global::Herald_UWP.View.UserLogin);
         }
 
         private int LookupTypeIndexByName(string typeName)
@@ -179,9 +213,11 @@ namespace Herald_UWP.Herald_UWP_XamlTypeInfo
             return -1;
         }
 
-        private object Activate_0_GPAPage() { return new global::Herald_UWP.View.GPAPage(); }
-        private object Activate_3_MainPage() { return new global::Herald_UWP.View.MainPage(); }
-        private object Activate_4_UserLogin() { return new global::Herald_UWP.View.UserLogin(); }
+        private object Activate_0_PullToRefreshBox() { return new global::PullToRefresh.UWP.PullToRefreshBox(); }
+        private object Activate_4_CardPage() { return new global::Herald_UWP.View.CardPage(); }
+        private object Activate_7_GPAPage() { return new global::Herald_UWP.View.GPAPage(); }
+        private object Activate_8_MainPage() { return new global::Herald_UWP.View.MainPage(); }
+        private object Activate_9_UserLogin() { return new global::Herald_UWP.View.UserLogin(); }
 
         private global::Windows.UI.Xaml.Markup.IXamlType CreateXamlType(int typeIndex)
         {
@@ -193,31 +229,58 @@ namespace Herald_UWP.Herald_UWP_XamlTypeInfo
             switch (typeIndex)
             {
 
-            case 0:   //  Herald_UWP.View.GPAPage
+            case 0:   //  PullToRefresh.UWP.PullToRefreshBox
+                userType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.ContentControl"));
+                userType.Activator = Activate_0_PullToRefreshBox;
+                userType.AddMemberName("TopIndicatorTemplate");
+                userType.AddMemberName("RefreshThreshold");
+                xamlType = userType;
+                break;
+
+            case 1:   //  Windows.UI.Xaml.Controls.ContentControl
+                xamlType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 2:   //  Windows.UI.Xaml.DataTemplate
+                xamlType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 3:   //  Double
+                xamlType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 4:   //  Herald_UWP.View.CardPage
                 userType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_0_GPAPage;
+                userType.Activator = Activate_4_CardPage;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 1:   //  Windows.UI.Xaml.Controls.Page
+            case 5:   //  Windows.UI.Xaml.Controls.Page
                 xamlType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 2:   //  Windows.UI.Xaml.Controls.UserControl
+            case 6:   //  Windows.UI.Xaml.Controls.UserControl
                 xamlType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 3:   //  Herald_UWP.View.MainPage
+            case 7:   //  Herald_UWP.View.GPAPage
                 userType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_3_MainPage;
+                userType.Activator = Activate_7_GPAPage;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 4:   //  Herald_UWP.View.UserLogin
+            case 8:   //  Herald_UWP.View.MainPage
                 userType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_4_UserLogin;
+                userType.Activator = Activate_8_MainPage;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 9:   //  Herald_UWP.View.UserLogin
+                userType = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
+                userType.Activator = Activate_9_UserLogin;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
@@ -225,12 +288,104 @@ namespace Herald_UWP.Herald_UWP_XamlTypeInfo
             return xamlType;
         }
 
+        private global::System.Collections.Generic.List<global::Windows.UI.Xaml.Markup.IXamlMetadataProvider> _otherProviders;
+        private global::System.Collections.Generic.List<global::Windows.UI.Xaml.Markup.IXamlMetadataProvider> OtherProviders
+        {
+            get
+            {
+                if(_otherProviders == null)
+                {
+                    var otherProviders = new global::System.Collections.Generic.List<global::Windows.UI.Xaml.Markup.IXamlMetadataProvider>();
+                    global::Windows.UI.Xaml.Markup.IXamlMetadataProvider provider;
+                    provider = new global::PullToRefresh.UWP.PullToRefresh_UWP_XamlTypeInfo.XamlMetaDataProvider() as global::Windows.UI.Xaml.Markup.IXamlMetadataProvider;
+                    otherProviders.Add(provider); 
+                    _otherProviders = otherProviders;
+                }
+                return _otherProviders;
+            }
+        }
 
+        private global::Windows.UI.Xaml.Markup.IXamlType CheckOtherMetadataProvidersForName(string typeName)
+        {
+            global::Windows.UI.Xaml.Markup.IXamlType xamlType = null;
+            global::Windows.UI.Xaml.Markup.IXamlType foundXamlType = null;
+            foreach(global::Windows.UI.Xaml.Markup.IXamlMetadataProvider xmp in OtherProviders)
+            {
+                xamlType = xmp.GetXamlType(typeName);
+                if(xamlType != null)
+                {
+                    if(xamlType.IsConstructible)    // not Constructible means it might be a Return Type Stub
+                    {
+                        return xamlType;
+                    }
+                    foundXamlType = xamlType;
+                }
+            }
+            return foundXamlType;
+        }
+
+        private global::Windows.UI.Xaml.Markup.IXamlType CheckOtherMetadataProvidersForType(global::System.Type type)
+        {
+            global::Windows.UI.Xaml.Markup.IXamlType xamlType = null;
+            global::Windows.UI.Xaml.Markup.IXamlType foundXamlType = null;
+            foreach(global::Windows.UI.Xaml.Markup.IXamlMetadataProvider xmp in OtherProviders)
+            {
+                xamlType = xmp.GetXamlType(type);
+                if(xamlType != null)
+                {
+                    if(xamlType.IsConstructible)    // not Constructible means it might be a Return Type Stub
+                    {
+                        return xamlType;
+                    }
+                    foundXamlType = xamlType;
+                }
+            }
+            return foundXamlType;
+        }
+
+        private object get_0_PullToRefreshBox_TopIndicatorTemplate(object instance)
+        {
+            var that = (global::PullToRefresh.UWP.PullToRefreshBox)instance;
+            return that.TopIndicatorTemplate;
+        }
+        private void set_0_PullToRefreshBox_TopIndicatorTemplate(object instance, object Value)
+        {
+            var that = (global::PullToRefresh.UWP.PullToRefreshBox)instance;
+            that.TopIndicatorTemplate = (global::Windows.UI.Xaml.DataTemplate)Value;
+        }
+        private object get_1_PullToRefreshBox_RefreshThreshold(object instance)
+        {
+            var that = (global::PullToRefresh.UWP.PullToRefreshBox)instance;
+            return that.RefreshThreshold;
+        }
+        private void set_1_PullToRefreshBox_RefreshThreshold(object instance, object Value)
+        {
+            var that = (global::PullToRefresh.UWP.PullToRefreshBox)instance;
+            that.RefreshThreshold = (global::System.Double)Value;
+        }
 
         private global::Windows.UI.Xaml.Markup.IXamlMember CreateXamlMember(string longMemberName)
         {
             global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlMember xamlMember = null;
-            // No Local Properties
+            global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType userType;
+
+            switch (longMemberName)
+            {
+            case "PullToRefresh.UWP.PullToRefreshBox.TopIndicatorTemplate":
+                userType = (global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType)GetXamlTypeByName("PullToRefresh.UWP.PullToRefreshBox");
+                xamlMember = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlMember(this, "TopIndicatorTemplate", "Windows.UI.Xaml.DataTemplate");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_0_PullToRefreshBox_TopIndicatorTemplate;
+                xamlMember.Setter = set_0_PullToRefreshBox_TopIndicatorTemplate;
+                break;
+            case "PullToRefresh.UWP.PullToRefreshBox.RefreshThreshold":
+                userType = (global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlUserType)GetXamlTypeByName("PullToRefresh.UWP.PullToRefreshBox");
+                xamlMember = new global::Herald_UWP.Herald_UWP_XamlTypeInfo.XamlMember(this, "RefreshThreshold", "Double");
+                xamlMember.SetIsDependencyProperty();
+                xamlMember.Getter = get_1_PullToRefreshBox_RefreshThreshold;
+                xamlMember.Setter = set_1_PullToRefreshBox_RefreshThreshold;
+                break;
+            }
             return xamlMember;
         }
     }
