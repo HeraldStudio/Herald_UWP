@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 // 这里的数据类型名称和APIBasicInfo中各字段的名称保持一致，实现动态调用
 namespace Herald_UWP.Utils
 {
@@ -117,26 +120,26 @@ namespace Herald_UWP.Utils
     //}
 
     [JsonObject]
-    public class GPA
+    public class Gpa
     {
         [JsonProperty("gpa")]
-        public string AverageGPA{set; get;}
+        public string AverageGpa { set; get; }
         [JsonProperty("gpa without revamp")]
-        public string FirstGPA{set; get;}
+        public string FirstGpa { set; get; }
         [JsonProperty("calculate time")]
-        public string CalTime{set; get;}
-        public List<GPASemester> Semesters { set; get; } = new List<GPASemester>();
+        public string CalTime { set; get; }
+        public List<GpaSemester> Semesters { set; get; } = new List<GpaSemester>();
     }
 
     [JsonObject]
-    public class GPASemester
+    public class GpaSemester
     {
         public string Semester{set; get;}
-        public List<GPAGrade> Grades { set; get; } = new List<GPAGrade>();
+        public List<GpaGrade> Grades { set; get; } = new List<GpaGrade>();
     }
 
     [JsonObject]
-    public class GPAGrade
+    public class GpaGrade
     {
         [JsonProperty("name")]
         public string Name{set; get;}

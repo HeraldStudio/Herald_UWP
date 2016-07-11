@@ -1,8 +1,7 @@
 ﻿<Page
-    x:Class="Herald_UWP.View.GPAPage"
+    x:Class="Herald_UWP.View.GpaPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Herald_UWP.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:data="using:Herald_UWP.Utils"
@@ -14,7 +13,7 @@
         <CollectionViewSource x:Name="GradesCVS"  IsSourceGrouped="True" ItemsPath="Grades"/>
 
         <!-- 显示成绩的ListView模板 -->
-        <DataTemplate x:Name="GradeListViewTemplate" x:DataType="data:GPAGrade">
+        <DataTemplate x:Name="GradeListViewTemplate" x:DataType="data:GpaGrade">
             <Grid Background="White" Padding="10,5,10,5" BorderBrush="LightGray" BorderThickness="0,0,0,1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width = "*"/>
@@ -40,6 +39,7 @@
                     <TextBlock Text="{x:Bind Credit}"/>
                 </StackPanel>
                 <TextBlock Text="{x:Bind Score}"
+                           Grid.Row="0" 
                            Grid.RowSpan="2"
                            Grid.Column="1"
                            Foreground="#10893E"
@@ -88,7 +88,7 @@
                             Margin="0,25,0,0"
                             HorizontalAlignment="Center" 
                             VerticalAlignment="Center">
-                    <TextBlock Text="{Binding AverageGPA}"
+                    <TextBlock Text="{Binding AverageGpa}"
                                Foreground="White" 
                                FontSize="30" 
                                HorizontalAlignment="Center"/>
@@ -98,7 +98,7 @@
                             Margin="0,25,0,0"
                             HorizontalAlignment="Center" 
                             VerticalAlignment="Center">
-                    <TextBlock Text="{Binding FirstGPA}"
+                    <TextBlock Text="{Binding FirstGpa}"
                                Foreground="White" 
                                FontSize="30" 
                                HorizontalAlignment="Center"/>
@@ -123,6 +123,7 @@
                         <GridView.ItemTemplate>
                             <DataTemplate>
                                 <Border Background="#00CC6A" Margin="20">
+                                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                     <TextBlock Text="{Binding Group.Semester}"
                                                Foreground="White"
                                                FontSize="30"
@@ -156,7 +157,7 @@
                         <ListView.GroupStyle>
                             <GroupStyle>
                                 <GroupStyle.HeaderTemplate>
-                                    <DataTemplate x:DataType="data:GPASemester">
+                                    <DataTemplate x:DataType="data:GpaSemester">
                                         <TextBlock Text="{x:Bind Semester}" Style="{ThemeResource TitleTextBlockStyle}"/>
                                     </DataTemplate>
                                 </GroupStyle.HeaderTemplate>

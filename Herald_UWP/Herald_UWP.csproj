@@ -105,8 +105,8 @@
     <Compile Include="View\CardPage.xaml.cs">
       <DependentUpon>CardPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\GPAPage.xaml.cs">
-      <DependentUpon>GPAPage.xaml</DependentUpon>
+    <Compile Include="View\GpaPage.xaml.cs">
+      <DependentUpon>GpaPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -141,7 +141,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\GPAPage.xaml">
+    <Page Include="View\GpaPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
