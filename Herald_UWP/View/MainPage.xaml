@@ -23,6 +23,12 @@
                             Click="NaviToCard"
                             Margin="20"
                             HorizontalAlignment="Center"/>
+                    <Button Content="课表"
+                            Height="50"
+                            Width="140"
+                            Click="NaviToCurriculum"
+                            Margin="20"
+                            HorizontalAlignment="Center"/>
                 </StackPanel>
             </PivotItem>
 

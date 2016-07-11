@@ -236,5 +236,60 @@ namespace Herald_UWP.Utils
 
             return cardInfo;
         }
+
+        public Curriculum GetCurriculum(JObject json)
+        {
+            var curriculumInfo = new Curriculum();
+
+            // 从服务器获得的开始日期没有年份，这就很尴尬了，先假设在当前年份
+            var nowDate = DateTime.Now;
+            var startMonth = json["content"]["startdate"]["month"].Value<int>();
+            var startDay = json["content"]["startdate"]["day"].Value<int>();
+            var startDate = new DateTime(nowDate.Year,startMonth,startDay);
+
+            // 如果这个假设的日期比现在还靠后，那么就认为开始日期再前一年
+            var gap = (nowDate - startDate).Days;
+            curriculumInfo.StartDate = gap > 0 ? startDate : new DateTime(nowDate.Year - 1, startMonth, startDay);
+
+            curriculumInfo.Courses[0] = GetCourses(json["content"]["Mon"]);
+            curriculumInfo.Courses[1] = GetCourses(json["content"]["Tue"]);
+            curriculumInfo.Courses[2] = GetCourses(json["content"]["Wed"]);
+            curriculumInfo.Courses[3] = GetCourses(json["content"]["Thu"]);
+            curriculumInfo.Courses[4] = GetCourses(json["content"]["Fri"]);
+            curriculumInfo.Courses[5] = GetCourses(json["content"]["Sat"]);
+            curriculumInfo.Courses[6] = GetCourses(json["content"]["Sun"]);
+
+            return curriculumInfo;
+        }
+
+        private static List<Course> GetCourses(JToken jCourses)
+        {
+            var courses = new List<Course>();
+
+            foreach (var jCourse in jCourses)
+            {
+                var course = new Course()
+                {
+                    Name = jCourse[0].Value<string>(),
+                    Classroom = jCourse[2].Value<string>()
+                };
+                
+                var temp = jCourse[1].Value<string>();
+                var index1 = temp.IndexOf("-", StringComparison.Ordinal);
+                var index2 = temp.IndexOf("周", StringComparison.Ordinal);
+                var index3 = temp.IndexOf("节", StringComparison.Ordinal);
+                var index4 = temp.LastIndexOf("-", StringComparison.Ordinal);
+
+                course.WeekRange[0] = int.Parse(temp.Substring(1, index1 - 1));
+                course.WeekRange[1] = int.Parse(temp.Substring(index1 + 1, index2 - index1 - 1));
+                course.TimeRange[0] = int.Parse(temp.Substring(index2 + 2, index4 - index2 - 2));
+                course.TimeRange[1] = int.Parse(temp.Substring(index4 + 1, index3 - index4 - 1));
+                // 第二位存上几节课，这样就可以直接应用到Grid的RowSpan属性上了
+                course.TimeRange[1] = course.TimeRange[1] - course.TimeRange[0] + 1;
+
+                courses.Add(course);
+            }
+            return courses;
+        }
     }
 }

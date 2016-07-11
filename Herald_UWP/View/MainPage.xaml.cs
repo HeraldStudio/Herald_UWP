@@ -29,5 +29,10 @@ namespace Herald_UWP.View
         {
             Frame?.Navigate(typeof(CardPage));
         }
+        
+        private void NaviToCurriculum(object sender, RoutedEventArgs e)
+        {
+            Frame?.Navigate(typeof(CurriculumPage));
+        }
     }
 }

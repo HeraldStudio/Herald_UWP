@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -87,6 +88,21 @@ namespace Herald_UWP.Utils
     //    public string[][] Sun { get; set; }
     //}
 
+    [JsonObject]
+    public class Curriculum
+    {
+        public DateTime StartDate { set; get; }
+        public List<Course>[] Courses { set; get; } = new List<Course>[7];
+    }
+
+    [JsonObject]
+    public class Course
+    {
+        public string Name { set; get; }
+        public string Classroom { set; get; }
+        public int[] WeekRange { set; get; } = new int[2];
+        public int[] TimeRange { set; get; } = new int[2];
+    }
 
     //// GPA
     //[DataContract]

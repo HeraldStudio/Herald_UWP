@@ -105,6 +105,9 @@
     <Compile Include="View\CardPage.xaml.cs">
       <DependentUpon>CardPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\CurriculumPage.xaml.cs">
+      <DependentUpon>CurriculumPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\GpaPage.xaml.cs">
       <DependentUpon>GpaPage.xaml</DependentUpon>
     </Compile>
@@ -138,6 +141,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="View\CardPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\CurriculumPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
