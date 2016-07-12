@@ -4,9 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:uwp="using:PullToRefresh.UWP"
+    xmlns:system="using:System"
     mc:Ignorable="d">
-
-    <Grid x:Name="BackGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -29,13 +31,6 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        
-        <!-- 背景 -->
-        <Rectangle Grid.Row="1"
-                   Grid.RowSpan="11"
-                   Grid.Column="1"
-                   Grid.ColumnSpan="5"
-                   Fill="#15000000"/>
 
         <!-- 显示节数的列 -->
         <Border Grid.Row="1" Grid.Column="0" BorderBrush="LightSlateGray" BorderThickness="0,0.25,0.5,0.25">
@@ -92,10 +87,62 @@
 
         <!-- 显示节数的列和显示周数的行 -->
         <Border Grid.Row="0" Grid.Column="0" BorderBrush="LightSlateGray" BorderThickness="0,0,0.25,0.25">
-            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                <TextBlock x:Name="WeekNum" HorizontalAlignment="Center"/>
-                <TextBlock HorizontalAlignment="Center">周</TextBlock>
-            </StackPanel>
+            <Button Background="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <TextBlock x:Name="WeekNum" HorizontalAlignment="Center"/>
+                    <TextBlock HorizontalAlignment="Center">周</TextBlock>
+                </StackPanel>
+                <Button.Flyout>
+                    <Flyout x:Name="SelectWeekFlyout">
+                        <ListView x:Name="WeekNumList">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="system:String">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Tapped="SelectWeek">
+                                        <TextBlock>第</TextBlock>
+                                        <TextBlock Text="{x:Bind }"/>
+                                        <TextBlock>周</TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
         </Border>
+
+        <uwp:PullToRefreshBox Grid.Row="1" Grid.RowSpan="11" Grid.Column="1" Grid.ColumnSpan="5" RefreshInvoked="PullToRefreshInvoked">
+            <Grid x:Name="BackGrid" Background="#15000000">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="2*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.Resources>
+                    <Storyboard x:Name="StoryBoardY">
+                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
+                                         From="0.0"
+                                         To="360.0"
+                                         AutoReverse="True"
+                                         RepeatBehavior="Forever">
+                        </DoubleAnimation>
+                    </Storyboard>
+                </Grid.Resources>
+            </Grid>
+        </uwp:PullToRefreshBox>
     </Grid>
 </Page>

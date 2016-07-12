@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Windows.Media.Devices;
 using Newtonsoft.Json;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -58,41 +59,11 @@ namespace Herald_UWP.Utils
     //    public string totalCredit { get; set; }
     //}
 
-
-    //// 课程表
-    //[DataContract]
-    //public class Curriculum : BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public CurriculumContent content { get; set; }
-    //}
-
-    //// 单个课程信息是有三个元素的字符串数组，结构为：
-    //// ["课程名称","[上课周数]上课时间","上课地点"]
-    //[DataContract]
-    //public class CurriculumContent
-    //{
-    //    [DataMember(Order = 0)]
-    //    public string[][] Mon { get; set; }
-    //    [DataMember(Order = 1)]
-    //    public string[][] Tue { get; set; }
-    //    [DataMember(Order = 2)]
-    //    public string[][] Wed { get; set; }
-    //    [DataMember(Order = 3)]
-    //    public string[][] Thu { get; set; }
-    //    [DataMember(Order = 4)]
-    //    public string[][] Fri { get; set; }
-    //    [DataMember(Order = 5)]
-    //    public string[][] Sat { get; set; }
-    //    [DataMember(Order = 6)]
-    //    public string[][] Sun { get; set; }
-    //}
-
     [JsonObject]
     public class Curriculum
     {
         public DateTime StartDate { set; get; }
-        public List<Course>[] Courses { set; get; } = new List<Course>[7];
+        public List<Course> Courses { set; get; } = new List<Course>();
     }
 
     [JsonObject]
@@ -100,40 +71,27 @@ namespace Herald_UWP.Utils
     {
         public string Name { set; get; }
         public string Classroom { set; get; }
+        public int Day { set; get; }
         public int[] WeekRange { set; get; } = new int[2];
         public int[] TimeRange { set; get; } = new int[2];
     }
 
-    //// GPA
-    //[DataContract]
-    //public class GPA : BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public GPAContent[] content { get; set; }
-    //}
+    [JsonObject]
+    public class Sidebar
+    {
+        public Dictionary<string, CourseInfo> CourseInfos { set; get; } = new Dictionary<string, CourseInfo>();
+    }
 
-    //[DataContract]
-    //public class GPAContent
-    //{
-    //    [DataMember(Order = 0)]
-    //    public string gpa { get; set; }
-    //    [DataMember(Order = 1, Name = "gpa without revamp")]
-    //    public string gpaWithoutRevamp { get; set; }
-    //    [DataMember(Order = 2, Name = "calculate time")]
-    //    public string calculateTime { get; set; }
-    //    [DataMember(Order = 3)]
-    //    public string semester { get; set; }
-    //    [DataMember(Order = 4)]
-    //    public string name { get; set; }
-    //    [DataMember(Order = 5)]
-    //    public string credit { get; set; }
-    //    [DataMember(Order = 6)]
-    //    public string score { get; set; }
-    //    [DataMember(Order = 7)]
-    //    public string type { get; set; }
-    //    [DataMember(Order = 8)]
-    //    public string extra { get; set; }
-    //}
+    [JsonObject]
+    public class CourseInfo
+    { 
+        [JsonProperty("lecturer")]
+        public string Teacher { set; get; }
+        [JsonProperty("week")]
+        public string Week { set; get; }
+        [JsonProperty("credit")]
+        public string Credit { set; get; }
+    }
 
     [JsonObject]
     public class Gpa

@@ -11,7 +11,7 @@ namespace Herald_UWP.Utils
 {
     public class HeraldClient
     {
-        private readonly HeraldHttpUtil _client = new HeraldHttpUtil();   // 处理Http请求
+        private readonly HeraldHttpUtil _client = new HeraldHttpUtil();
         public string Uuid { get; set; }
 
         /// <summary>
@@ -54,9 +54,10 @@ namespace Herald_UWP.Utils
         /// </summary>
         /// <typeparam name="T">查询的项目类型，如一卡通Card、成绩GPA</typeparam>
         /// <param name="param">查询时可能会需要的参数</param>
-        /// <param name="enableCache">允不允许本地缓存</param>
+        /// <param name="isRefresh">若是刷新，则直接从网络获取数据，并缓存</param>
+        /// <param name="enableCache">是否使用缓存</param>
         /// <returns>同T</returns>
-        public async Task<T> QueryForData<T>(List<KeyValuePair<string, string>> param = null, bool enableCache = true)
+        public async Task<T> QueryForData<T>(List<KeyValuePair<string, string>> param = null, bool isRefresh = false, bool enableCache = true)
         {
             // 根据查询的信息的类名字，获取API中对应的地址,这个类名字到后面还可以用来调用函数
             var apiName = typeof(T).Name;
@@ -64,7 +65,7 @@ namespace Herald_UWP.Utils
 
             // 先从本地获取数据，如果没有本地数据则从服务器获取
             var resultStr = await FileSystem.Read(apiName + ".data");
-            if (!string.IsNullOrEmpty(resultStr) && enableCache)
+            if (!string.IsNullOrEmpty(resultStr) && enableCache && !isRefresh)
             {
                 return JsonConvert.DeserializeObject<T>(resultStr);
             }
@@ -77,7 +78,7 @@ namespace Herald_UWP.Utils
             {
                 // 先获得Json对象，然后用Json处理函数处理为对应数据类的对象
                 var jObject = await QueryForJson(address, param);
-                T resultObj = (T)method.Invoke(this, new object[] { jObject });
+                var resultObj = (T)method.Invoke(this, new object[] { jObject });
 
                 // enableCache为true，则把数据也写入本地数据
                 if (!enableCache) return resultObj;
@@ -120,6 +121,8 @@ namespace Herald_UWP.Utils
                 {
                     isWrongResult = false;
                     resultObj = JObject.Parse(resultStr);
+                    if (resultObj["code"].Value<int>() == 500) isWrongResult = true;
+                    if (!resultObj["content"].HasValues) isWrongResult = true;
                 }
                 catch (JsonReaderException)
                 {
@@ -237,9 +240,30 @@ namespace Herald_UWP.Utils
             return cardInfo;
         }
 
+        public Sidebar GetSidebar(JObject json)
+        {
+            var sidebarInfo = new Sidebar();
+            foreach (var jCourse in json["content"])
+            {
+                var courseInfo = jCourse.ToObject<CourseInfo>();
+                sidebarInfo.CourseInfos.Add(jCourse["course"].Value<string>(), courseInfo);
+            }
+            return sidebarInfo;
+        }
+
         public Curriculum GetCurriculum(JObject json)
         {
             var curriculumInfo = new Curriculum();
+            var dayDictionary = new Dictionary<string, int>()
+            {
+                {"Mon",1 },
+                {"Tue",2 },
+                {"Wed",3 },
+                {"Thu",4 },
+                {"Fri",5 },
+                {"Sat",6 },
+                {"Sun",7 }
+            };
 
             // 从服务器获得的开始日期没有年份，这就很尴尬了，先假设在当前年份
             var nowDate = DateTime.Now;
@@ -251,45 +275,37 @@ namespace Herald_UWP.Utils
             var gap = (nowDate - startDate).Days;
             curriculumInfo.StartDate = gap > 0 ? startDate : new DateTime(nowDate.Year - 1, startMonth, startDay);
 
-            curriculumInfo.Courses[0] = GetCourses(json["content"]["Mon"]);
-            curriculumInfo.Courses[1] = GetCourses(json["content"]["Tue"]);
-            curriculumInfo.Courses[2] = GetCourses(json["content"]["Wed"]);
-            curriculumInfo.Courses[3] = GetCourses(json["content"]["Thu"]);
-            curriculumInfo.Courses[4] = GetCourses(json["content"]["Fri"]);
-            curriculumInfo.Courses[5] = GetCourses(json["content"]["Sat"]);
-            curriculumInfo.Courses[6] = GetCourses(json["content"]["Sun"]);
+            foreach (var jCourses in json["content"])
+            {
+                foreach (var jCourse in jCourses.Values())
+                {
+                    int tempDay;
+                    if (!dayDictionary.TryGetValue(((JProperty)jCourses).Name, out tempDay)) break;
+
+                    var course = new Course()
+                    {
+                        Name = jCourse[0].Value<string>(),
+                        Classroom = jCourse[2].Value<string>(),
+                        Day = tempDay
+                    };
+
+                    var temp = jCourse[1].Value<string>();
+                    var index1 = temp.IndexOf("-", StringComparison.Ordinal);
+                    var index2 = temp.IndexOf("周", StringComparison.Ordinal);
+                    var index3 = temp.IndexOf("节", StringComparison.Ordinal);
+                    var index4 = temp.LastIndexOf("-", StringComparison.Ordinal);
+
+                    course.WeekRange[0] = int.Parse(temp.Substring(1, index1 - 1));
+                    course.WeekRange[1] = int.Parse(temp.Substring(index1 + 1, index2 - index1 - 1));
+                    course.TimeRange[0] = int.Parse(temp.Substring(index2 + 2, index4 - index2 - 2));
+                    course.TimeRange[1] = int.Parse(temp.Substring(index4 + 1, index3 - index4 - 1));
+                    course.TimeRange[1] = course.TimeRange[1] - course.TimeRange[0] + 1;
+
+                    curriculumInfo.Courses.Add(course);
+                }
+            }
 
             return curriculumInfo;
-        }
-
-        private static List<Course> GetCourses(JToken jCourses)
-        {
-            var courses = new List<Course>();
-
-            foreach (var jCourse in jCourses)
-            {
-                var course = new Course()
-                {
-                    Name = jCourse[0].Value<string>(),
-                    Classroom = jCourse[2].Value<string>()
-                };
-                
-                var temp = jCourse[1].Value<string>();
-                var index1 = temp.IndexOf("-", StringComparison.Ordinal);
-                var index2 = temp.IndexOf("周", StringComparison.Ordinal);
-                var index3 = temp.IndexOf("节", StringComparison.Ordinal);
-                var index4 = temp.LastIndexOf("-", StringComparison.Ordinal);
-
-                course.WeekRange[0] = int.Parse(temp.Substring(1, index1 - 1));
-                course.WeekRange[1] = int.Parse(temp.Substring(index1 + 1, index2 - index1 - 1));
-                course.TimeRange[0] = int.Parse(temp.Substring(index2 + 2, index4 - index2 - 2));
-                course.TimeRange[1] = int.Parse(temp.Substring(index4 + 1, index3 - index4 - 1));
-                // 第二位存上几节课，这样就可以直接应用到Grid的RowSpan属性上了
-                course.TimeRange[1] = course.TimeRange[1] - course.TimeRange[0] + 1;
-
-                courses.Add(course);
-            }
-            return courses;
         }
     }
 }

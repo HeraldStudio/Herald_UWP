@@ -16,7 +16,7 @@ namespace Herald_UWP.View
     public sealed partial class CardPage
     {
         private readonly App _currentApp = Application.Current as App;
-        private Card _cardData;
+        private static Card _cardData;
 
         public CardPage()
         {
@@ -37,7 +37,7 @@ namespace Herald_UWP.View
                 new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("timedelta", "1"),
-                }, false);
+                }, enableCache: false);
 
             _cardData.CardDailys.InsertRange(0, todayData.CardDailys);
 
@@ -71,7 +71,7 @@ namespace Herald_UWP.View
                 new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("timedelta", "1"),
-                }, false);
+                }, enableCache: false);
             _cardData.CardDailys.InsertRange(0, todayData.CardDailys);
 
             // 最后更新本地文件的内容

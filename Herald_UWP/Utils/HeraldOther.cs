@@ -30,9 +30,9 @@ namespace Herald_UWP.Utils
         public const string Lecture = ApiUrl + "lecture";          // 查询人文讲座
         public const string Library = ApiUrl + "library";          // 查询图书馆借阅
         public const string Search = ApiUrl + "search";            // 图书搜索
+        public const string Sidebar = ApiUrl + "sidebar";          // 查询课程列表
 
         public const string Term = ApiUrl + "term";                // 查询学期列表
-        public const string Sidebar = ApiUrl + "sidebar";          // 查询课程列表
         public const string Simsimi = ApiUrl + "simsimi";          // 调戏小猴
         public const string Renew = ApiUrl + "renew";              // 图书馆续借
     }

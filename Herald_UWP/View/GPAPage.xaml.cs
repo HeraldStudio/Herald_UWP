@@ -10,19 +10,19 @@ namespace Herald_UWP.View
     public sealed partial class GpaPage
     {
         private readonly App _currentApp = Application.Current as App;
-        private Gpa _gpaData;
+        private static Gpa _gpaData;
 
         public GpaPage()
         {
             InitializeComponent();
             NavigationCacheMode = NavigationCacheMode.Enabled;
-            InitializeContent(false);
+            InitializeContent();
         }
 
-        private async void InitializeContent(bool enableCache)
+        private async void InitializeContent(bool isRefresh = false)
         {
             // 获取GPA数据
-            _gpaData = await _currentApp.Client.QueryForData<Gpa>(enableCache : enableCache);
+            _gpaData = await _currentApp.Client.QueryForData<Gpa>(isRefresh: isRefresh);
 
             // 绑定数据
             DataContext = _gpaData;
