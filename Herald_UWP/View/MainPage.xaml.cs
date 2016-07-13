@@ -34,5 +34,10 @@ namespace Herald_UWP.View
         {
             Frame?.Navigate(typeof(CurriculumPage));
         }
+
+        private void NaviToPe(object sender, RoutedEventArgs e)
+        {
+            Frame?.Navigate(typeof(PePage));
+        }
     }
 }

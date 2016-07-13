@@ -30,7 +30,7 @@ namespace Herald_UWP.View
             _cardData = await _currentApp.Client.QueryForData<Card>(
                 new List<KeyValuePair<string, string>>
                 {
-                    new KeyValuePair<string, string>("timedelta", "7"),
+                    new KeyValuePair<string, string>("timedelta", "30"),
                 });
 
             var todayData = await _currentApp.Client.QueryForData<Card>(
@@ -52,19 +52,25 @@ namespace Herald_UWP.View
             var newDate = DateTime.Now.ToLocalTime();
             var gapDay = (newDate - oldDate).Days;
 
-            // 可能上一次跟新的时候当天数据没有获取完，所以删掉重新获取
+            // 可能上一次更新之后的当天又有消费，所以删掉重新获取
             _cardData.CardDailys.RemoveAt(0);
 
             // gapDay不为零说明上次更新不是今天，要获取今天之前的内容
             if (gapDay != 0)
-            {
+            {            
+                // 因为蛋疼的参数1并不能获取昨天一天的消费，所以只能多删一天，再多获取一天
+                _cardData.CardDailys.RemoveAt(0);
+
                 var newCardData = await _currentApp.Client.QueryForData<Card>(
                     new List<KeyValuePair<string, string>>
                     {
-                        new KeyValuePair<string, string>("timedelta", gapDay.ToString()),
+                        new KeyValuePair<string, string>("timedelta", (gapDay + 1).ToString()),
                     }, enableCache : false);
                 _cardData.CardDailys.InsertRange(0, newCardData.CardDailys);
             }
+
+            // 更新本地文件的内容，注意任何时候当天的消费信息都不缓存
+            FileSystem.Write("Card.data", JsonConvert.SerializeObject(_cardData));
 
             // 但不管上次更新是在什么时候，当天的信息都要重新获取
             var todayData = await _currentApp.Client.QueryForData<Card>(
@@ -74,8 +80,6 @@ namespace Herald_UWP.View
                 }, enableCache: false);
             _cardData.CardDailys.InsertRange(0, todayData.CardDailys);
 
-            // 最后更新本地文件的内容
-            FileSystem.Write("Card.data", JsonConvert.SerializeObject(_cardData));
             // 重新绑定数据
             CardItemsCVS.Source = _cardData.CardDailys;
         }

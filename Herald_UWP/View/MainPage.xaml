@@ -11,22 +11,28 @@
             <PivotItem x:Uid="Home"
                        Header="主页">
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <Button Content="跑操"
+                            Height="50"
+                            Width="140"
+                            Click="NaviToPe"
+                            Margin="20"
+                            HorizontalAlignment="Center"/>
                     <Button Content="成绩信息"
                             Height="50"
                             Width="140"
                             Click ="NaviToGpa"
                             Margin="20"
                             HorizontalAlignment="Center"/>
-                    <Button Content="一卡通"
-                            Height="50"
-                            Width="140"
-                            Click="NaviToCard"
-                            Margin="20"
-                            HorizontalAlignment="Center"/>
                     <Button Content="课表"
                             Height="50"
                             Width="140"
                             Click="NaviToCurriculum"
+                            Margin="20"
+                            HorizontalAlignment="Center"/>
+                    <Button Content="一卡通"
+                            Height="50"
+                            Width="140"
+                            Click="NaviToCard"
                             Margin="20"
                             HorizontalAlignment="Center"/>
                 </StackPanel>

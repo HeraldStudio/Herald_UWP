@@ -64,12 +64,12 @@ namespace Herald_UWP.Utils
             var address = (string)typeof(ApiBasicInfo).GetField(apiName).GetValue(null);
 
             // 先从本地获取数据，如果没有本地数据则从服务器获取
-            var resultStr = await FileSystem.Read(apiName + ".data");
-            if (!string.IsNullOrEmpty(resultStr) && enableCache && !isRefresh)
+            if (enableCache && !isRefresh)
             {
-                return JsonConvert.DeserializeObject<T>(resultStr);
+                var resultStr = await FileSystem.Read(apiName + ".data");
+                if (!string.IsNullOrEmpty(resultStr)) return JsonConvert.DeserializeObject<T>(resultStr);
             }
-            
+
             // 通过类名字获取对应的Json处理函数
             var method = typeof(HeraldClient).GetMethod("Get" + apiName);
 
@@ -110,19 +110,21 @@ namespace Herald_UWP.Utils
             var requestContent = new HttpFormUrlEncodedContent(param);
 
             // 先将获取到的Json直接转换为JObject用于预处理
-            JObject resultObj = null;
+            var resultObj = new JObject();
             bool isWrongResult;
 
-            // 因为服务器的问题，偶尔会返回错误信息而不是Json数据，多试几次就好了
+            // 因为服务器的问题，偶尔会返回错误信息而不是Json数据，多试几次就好了,最多试10次
+            var loopCount = 10;
             do
             {
+                if (loopCount-- <= 0) break;
                 var resultStr = await _client.Post(url, requestContent);
                 try
                 {
                     isWrongResult = false;
                     resultObj = JObject.Parse(resultStr);
                     if (resultObj["code"].Value<int>() == 500) isWrongResult = true;
-                    if (!resultObj["content"].HasValues) isWrongResult = true;
+                    if (url == ApiBasicInfo.Sidebar && !resultObj["content"].HasValues) isWrongResult = true;
                 }
                 catch (JsonReaderException)
                 {
@@ -249,6 +251,29 @@ namespace Herald_UWP.Utils
                 sidebarInfo.CourseInfos.Add(jCourse["course"].Value<string>(), courseInfo);
             }
             return sidebarInfo;
+        }
+
+        public Pe GetPe(JObject json)
+        {
+            return json.ToObject<Pe>();
+        }
+
+        public PeDetail GetPeDetail(JObject json)
+        {
+            var peDetailInfo = new PeDetail();
+            foreach (var jDetail in json["content"])
+            {
+                var detail = jDetail.ToObject<PeDetailItem>();
+
+                var signDate = jDetail["sign_date"].Value<string>();
+                var signTime = jDetail["sign_time"].Value<string>();
+                var splitedDate = signDate.Split('-');
+                var splitedTime = signTime.Split('.');
+
+                detail.SginTime = new DateTime(int.Parse(splitedDate[0]), int.Parse(splitedDate[1]), int.Parse(splitedDate[2]), int.Parse(splitedTime[0]), int.Parse(splitedTime[1]), 0);
+                peDetailInfo.Details.Add(new DateTime(detail.SginTime.Year, detail.SginTime.Month, detail.SginTime.Day), detail);
+            }
+            return peDetailInfo;
         }
 
         public Curriculum GetCurriculum(JObject json)

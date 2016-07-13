@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Windows.Media.Devices;
 using Newtonsoft.Json;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -9,56 +8,9 @@ using Newtonsoft.Json;
 // 这里的数据类型名称和APIBasicInfo中各字段的名称保持一致，实现动态调用
 namespace Herald_UWP.Utils
 {
-    //// 分组用的数据类型
-    //public class GroupInfoList
-    //{
-    //    public JObject Key { get; set; }
-    //    public List<object> Items { get; set; } = new List<object>();
-    //}
-
-    //// 基类
-    //[DataContract]
-    //public class BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public int code { get; set; }
-    //}
-
-    //// SRTP
-    //[DataContract]
-    //public class SRTP : BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public SRTPContent[] content { get; set; }
-    //}
-
-    //[DataContract]
-    //public class SRTPContent
-    //{
-    //    [DataMember(Order = 0)]
-    //    public string score { get; set; }
-    //    [DataMember(Order = 1)]
-    //    public string total { get; set; }
-    //    [DataMember(Order = 2)]
-    //    public string name { get; set; }
-    //    [DataMember(Order = 3, Name = "card number")]
-    //    public string cardNumber { get; set; }
-    //    [DataMember(Order = 4)]
-    //    public string credit { get; set; }
-    //    [DataMember(Order = 5)]
-    //    public string proportion { get; set; }
-    //    [DataMember(Order = 6)]
-    //    public string project { get; set; }
-    //    [DataMember(Order = 7)]
-    //    public string department { get; set; }
-    //    [DataMember(Order = 8)]
-    //    public string date { get; set; }
-    //    [DataMember(Order = 9)]
-    //    public string type { get; set; }
-    //    [DataMember(Order = 10, Name = "total credit")]
-    //    public string totalCredit { get; set; }
-    //}
-
+    /// <summary>
+    /// 课表的两个数据类型
+    /// </summary>
     [JsonObject]
     public class Curriculum
     {
@@ -66,6 +18,7 @@ namespace Herald_UWP.Utils
         public List<Course> Courses { set; get; } = new List<Course>();
     }
 
+    // 单门课程的上课信息
     [JsonObject]
     public class Course
     {
@@ -76,6 +29,9 @@ namespace Herald_UWP.Utils
         public int[] TimeRange { set; get; } = new int[2];
     }
 
+    /// <summary>
+    /// 课程信息的两个数据类型
+    /// </summary>
     [JsonObject]
     public class Sidebar
     {
@@ -93,6 +49,9 @@ namespace Herald_UWP.Utils
         public string Credit { set; get; }
     }
 
+    /// <summary>
+    /// 成绩的三个数据类型
+    /// </summary>
     [JsonObject]
     public class Gpa
     {
@@ -105,6 +64,7 @@ namespace Herald_UWP.Utils
         public List<GpaSemester> Semesters { set; get; } = new List<GpaSemester>();
     }
 
+    // 每个学期的成绩信息
     [JsonObject]
     public class GpaSemester
     {
@@ -112,6 +72,7 @@ namespace Herald_UWP.Utils
         public List<GpaGrade> Grades { set; get; } = new List<GpaGrade>();
     }
 
+    // 没门课的成绩信息
     [JsonObject]
     public class GpaGrade
     {
@@ -124,100 +85,6 @@ namespace Herald_UWP.Utils
         [JsonProperty("type")]
         public string Type{set; get;}
     }
-
-    //// 跑操信息概要
-    //[DataContract]
-    //public class PE : BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public string content { get; set; }
-    //    [DataMember(Order = 1)]
-    //    public string remain { get; set; }
-    //}
-
-
-    //// 跑操记录
-    //[DataContract]
-    //public class PEDetail : BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public PEDetailContent[] content { get; set; }
-    //}
-
-    //[DataContract]
-    //public class PEDetailContent
-    //{
-    //    [DataMember(Order = 0, Name = "sign_time")]
-    //    public string signTime { get; set; }
-    //    [DataMember(Order = 1, Name = "sign_date")]
-    //    public string signDate { get; set; }
-    //    [DataMember(Order = 2, Name = "sign_effect")]
-    //    public string signEffect { get; set; }
-    //}
-
-
-    //// 校园网信息
-    //[DataContract]
-    //public class NIC : BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public NICContent content { get; set; }
-    //}
-
-    //[DataContract]
-    //public class NICContent
-    //{
-    //    [DataMember(Order = 0)]
-    //    public NICInfo web { get; set; }
-    //    [DataMember(Order = 1)]
-    //    public string left { get; set; }
-    //}
-
-    //[DataContract]
-    //public class NICInfo
-    //{
-    //    [DataMember(Order = 0)]
-    //    public string state { get; set; }
-    //    [DataMember(Order = 1)]
-    //    public string used { get; set; }
-    //}
-
-
-    //// 一卡通
-    //[DataContract]
-    //public class Card : BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public CardContent content { set; get; }
-    //}
-
-    //[DataContract]
-    //public class CardContent
-    //{
-    //    [DataMember(Order = 0)]
-    //    public string state { set; get; }
-    //    [DataMember(Order = 1, Name = "detial")]
-    //    public CardItem[] detail { set; get; }
-    //    [DataMember(Order = 2)]
-    //    public string left { set; get; }
-    //}
-
-    //[DataContract]
-    //public class CardItem
-    //{
-    //    [DataMember(Order = 0)]
-    //    public string date { set; get; }
-    //    [DataMember(Order = 1)]
-    //    public string price { set; get; }
-    //    [DataMember(Order = 2)]
-    //    public string type { set; get; }
-    //    [DataMember(Order = 3)]
-    //    public string system { set; get; }
-    //    [DataMember(Order = 4)]
-    //    public string left { set; get; }
-    //    [DataMember(Order = 5)]
-    //    public string time { set; get; }
-    //}
 
     /// <summary>
     /// 三个一卡通相关的类
@@ -232,6 +99,7 @@ namespace Herald_UWP.Utils
         public List<CardDaily> CardDailys { set; get; } = new List<CardDaily>();
     }
 
+    // 每日的消费
     [JsonObject]
     public class CardDaily
     {
@@ -242,6 +110,7 @@ namespace Herald_UWP.Utils
         public List<CardDailyDetail> CardDailyDetails { set; get; } = new List<CardDailyDetail>();
     }
 
+    // 每项消费的详情
     [JsonObject]
     public class CardDailyDetail
     {
@@ -256,85 +125,32 @@ namespace Herald_UWP.Utils
         public string Left{set; get;}
     }
 
-    //// 人文讲座
-    //[DataContract]
-    //public class Lecture : BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public LectureContent content { get; set; }
-    //}
+    /// <summary>
+    /// 跑操信息
+    /// </summary>
+    [JsonObject]
+    public class Pe
+    {
+        [JsonProperty("content")]
+        public int DoneCount { set; get; }
+        [JsonProperty("remain")]
+        public int RemainDay { set; get; }
+    }
 
-    //[DataContract]
-    //public class LectureContent
-    //{
-    //    [DataMember(Order = 0)]
-    //    public int count { get; set; }
-    //    [DataMember(Order = 1)]
-    //    public LectureItem[] detial { get; set; }
-    //}
+    /// <summary>
+    /// 跑操详细信息
+    /// </summary>
+    [JsonObject]
+    public class PeDetail
+    {
+        public Dictionary<DateTimeOffset, PeDetailItem> Details { set; get; } = new Dictionary<DateTimeOffset, PeDetailItem>();
+    }
 
-    //[DataContract]
-    //public class LectureItem
-    //{
-    //    [DataMember(Order = 0)]
-    //    public string date { get; set; }
-    //    [DataMember(Order = 1)]
-    //    public string place { get; set; }
-    //}
-
-
-    //// 图书馆借阅信息
-    //[DataContract]
-    //public class Library : BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public LibraryItem[] content { get; set; }
-    //}
-
-    //[DataContract]
-    //public class LibraryItem
-    //{
-    //    [DataMember(Order = 0, Name = "due_date")]
-    //    public string dueDate { get; set; }
-    //    [DataMember(Order = 1)]
-    //    public string author { get; set; }
-    //    [DataMember(Order = 2)]
-    //    public string barcode { get; set; }
-    //    [DataMember(Order = 3, Name = "render_date")]
-    //    public string renderDate { get; set; }
-    //    [DataMember(Order = 4)]
-    //    public string place { get; set; }
-    //    [DataMember(Order = 5)]
-    //    public string title { get; set; }
-    //    [DataMember(Order = 6, Name = "renew_time")]
-    //    public string renewTime { get; set; }
-    //}
-
-
-    //// 图书馆图书搜索（前20条）
-    //[DataContract]
-    //public class Search : BaseHeraldType
-    //{
-    //    [DataMember(Order = 0)]
-    //    public BookItem[] content { get; set; }
-    //}
-
-    //[DataContract]
-    //public class BookItem
-    //{
-    //    [DataMember(Order = 0)]
-    //    public string index { get; set; }
-    //    [DataMember(Order = 1)]
-    //    public string all { get; set; }
-    //    [DataMember(Order = 2)]
-    //    public string name { get; set; }
-    //    [DataMember(Order = 3)]
-    //    public string author { get; set; }
-    //    [DataMember(Order = 4)]
-    //    public string publish { get; set; }
-    //    [DataMember(Order = 5)]
-    //    public string type { get; set; }
-    //    [DataMember(Order = 6)]
-    //    public string left { get; set; }
-    //}
+    [JsonObject]
+    public class PeDetailItem
+    {
+        [JsonProperty("sign_effect")]
+        public string SignEffect { set; get; }
+        public DateTime SginTime { set; get; }
+    }
 }
