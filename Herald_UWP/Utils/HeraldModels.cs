@@ -153,4 +153,14 @@ namespace Herald_UWP.Utils
         public string SignEffect { set; get; }
         public DateTime SginTime { set; get; }
     }
+
+    [JsonObject]
+    public class Nic
+    {
+        [JsonProperty("left")]
+        public float Left { set; get; }
+        public float Used { set; get; }
+        public string Unit { set; get; }
+        public string State { set; get; }
+    }
 }

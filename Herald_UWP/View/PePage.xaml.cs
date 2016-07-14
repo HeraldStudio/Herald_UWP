@@ -12,8 +12,8 @@ namespace Herald_UWP.View
     public sealed partial class PePage
     {
         private readonly App _cuurrentApp = Application.Current as App;
-        private PeDetail _peDetailData;
-        private Pe _peData;
+        private static PeDetail _peDetailData;
+        private static Pe _peData;
 
         public PePage()
         {
@@ -58,7 +58,7 @@ namespace Herald_UWP.View
             PeDetailItem peItem;
             if (!_peDetailData.Details.TryGetValue(dayItem.Date, out peItem)) return;
             if (peItem.SignEffect != "有效") return;
-            dayItem.Background = new SolidColorBrush(Color.FromArgb(255, 0, 178, 148));
+            dayItem.Background = Resources["PeThemeColor"] as SolidColorBrush;
         }
     }
 }

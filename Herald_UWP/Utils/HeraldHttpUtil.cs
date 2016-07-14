@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
+using Windows.UI.Popups;
 using Windows.Web.Http;
 
 namespace Herald_UWP.Utils
@@ -28,13 +28,8 @@ namespace Herald_UWP.Utils
             catch (Exception e)
             {
                 exceptionBody += e.Message;
-                var dialog = new ContentDialog()
-                {
-                    Title = "接收到了异常",
-                    Content = exceptionBody,
-                    FullSizeDesired = false,
-                    PrimaryButtonText = "好吧",
-                };
+                var dialog = new MessageDialog(exceptionBody, "接收到了异常");
+                dialog.Commands.Add(new UICommand("确定"));
                 await dialog.ShowAsync();
             }
             return responseBody;

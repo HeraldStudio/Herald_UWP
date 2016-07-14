@@ -10,6 +10,8 @@
 
     <Page.Resources>
         <CollectionViewSource x:Name="CardItemsCVS" IsSourceGrouped="True" ItemsPath="CardDailyDetails"/>
+
+        <SolidColorBrush x:Key="CardThemeColor" Color="#1081CA"></SolidColorBrush>
         
         <!-- 消费信息ListViewItem的模板 -->
         <DataTemplate x:Name="CardListViewItemTemplate" x:DataType="data:CardDailyDetail">
@@ -28,7 +30,7 @@
                            Grid.Row="0"
                            Grid.Column="0"
                            Padding="5,0,0,0"
-                           Foreground="#1081CA"
+                           Foreground="{StaticResource CardThemeColor}"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"/>
                 <TextBlock Text="{x:Bind Type}"
@@ -52,7 +54,7 @@
                             VerticalAlignment="Center">
                     <TextBlock Text="{x:Bind Price}"
                                Padding="0,0,5,0"
-                               Foreground="#1081CA" 
+                               Foreground="{StaticResource CardThemeColor}" 
                                HorizontalAlignment="Right"/>
                     <TextBlock Text="{x:Bind Left}" 
                                Padding="0,0,5,0" 

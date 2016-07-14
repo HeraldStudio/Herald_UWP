@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 
 namespace Herald_UWP.View
 {
@@ -23,6 +23,12 @@ namespace Herald_UWP.View
             if (await authStatus)
             {
                 Frame?.Navigate(typeof(MainPage));
+            }
+            else
+            {
+                var dialog = new MessageDialog("用户名或密码错误");
+                dialog.Commands.Add(new UICommand("确定"));
+                await dialog.ShowAsync();
             }
         }
     }

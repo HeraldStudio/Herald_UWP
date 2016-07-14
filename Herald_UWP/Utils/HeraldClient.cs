@@ -31,16 +31,10 @@ namespace Herald_UWP.Utils
                     new KeyValuePair<string, string>("appid", ApiBasicInfo.AppId),
                 });
 
-            // 发起请求，结果即为UUID，同时要接收异常
-            try
-            {
-                var responseContent = _client.Post(ApiBasicInfo.Auth, requestContent);
-                Uuid = await responseContent;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            // 发起请求，结果即为UUID
+            var responseContent = await _client.Post(ApiBasicInfo.Auth, requestContent);
+            if (responseContent.Contains("401: Unauthorized")) return false;
+            Uuid = responseContent;
 
             // 把UUID也存到localSettings里面，供以后用户直接使用
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -274,6 +268,42 @@ namespace Herald_UWP.Utils
                 peDetailInfo.Details.Add(new DateTime(detail.SginTime.Year, detail.SginTime.Month, detail.SginTime.Day), detail);
             }
             return peDetailInfo;
+        }
+
+        public Nic GetNic(JObject json)
+        {
+            const string str = @"{
+              ""content"": {
+                ""a"": {
+                  ""state"": ""未开通"", 
+                  ""used"": ""0 B""
+                }, 
+                ""web"": {
+                  ""state"": ""正常,离线"", 
+                  ""used"": ""3.5 GB""
+                }, 
+                ""b"": {
+                  ""state"": ""未开通"", 
+                  ""used"": ""0 B""
+                }, 
+                ""left"": ""0.00 元""
+              }, 
+              ""code"": 200
+            }";
+            json = JObject.Parse(str);
+
+            var tempUsedUnit = json["content"]["web"]["used"].Value<string>();
+            var tempArray = (tempUsedUnit == "暂无流量信息" ? "0 KB" : tempUsedUnit).Split(' ');
+
+            var nicInfo = new Nic
+            {
+                Left = float.Parse(json["content"]["left"].Value<string>().Split(' ')[0]),
+                Used = float.Parse(tempArray[0]),
+                Unit = tempArray[1],
+                State = json["content"]["web"]["state"].Value<string>()
+            };
+
+            return nicInfo;
         }
 
         public Curriculum GetCurriculum(JObject json)

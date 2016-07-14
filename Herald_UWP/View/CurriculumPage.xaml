@@ -132,16 +132,6 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Grid.Resources>
-                    <Storyboard x:Name="StoryBoardY">
-                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
-                                         From="0.0"
-                                         To="360.0"
-                                         AutoReverse="True"
-                                         RepeatBehavior="Forever">
-                        </DoubleAnimation>
-                    </Storyboard>
-                </Grid.Resources>
             </Grid>
         </uwp:PullToRefreshBox>
     </Grid>

@@ -11,6 +11,12 @@
             <PivotItem x:Uid="Home"
                        Header="主页">
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <Button Content="校园网"
+                            Height="50"
+                            Width="140"
+                            Click="NaviToNic"
+                            Margin="20"
+                            HorizontalAlignment="Center"/>
                     <Button Content="跑操"
                             Height="50"
                             Width="140"

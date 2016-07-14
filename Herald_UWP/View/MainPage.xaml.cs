@@ -39,5 +39,10 @@ namespace Herald_UWP.View
         {
             Frame?.Navigate(typeof(PePage));
         }
+
+        private void NaviToNic(object sender, RoutedEventArgs e)
+        {
+            Frame?.Navigate(typeof(NicPage));
+        }
     }
 }
