@@ -1,12 +1,14 @@
 ﻿using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 namespace Herald_UWP.View
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage
     {
+        private int _preIndex;
+
         public MainPage()
         {
             InitializeComponent();
@@ -43,6 +45,29 @@ namespace Herald_UWP.View
         private void NaviToNic(object sender, RoutedEventArgs e)
         {
             Frame?.Navigate(typeof(NicPage));
+        }
+
+        private void Pivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var preGrid = (Grid)VisualTreeHelper.GetChild(PivotHeaderGrid, _preIndex);
+            foreach (var childPnl in preGrid.Children)
+            {
+                childPnl.Visibility = childPnl.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            var selectedIndex = ((Pivot) sender).SelectedIndex;
+            _preIndex = selectedIndex;
+
+            var nowGrid = (Grid)VisualTreeHelper.GetChild(PivotHeaderGrid, _preIndex);
+            foreach (var childPnl in nowGrid.Children)
+            {
+                childPnl.Visibility = childPnl.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private void PivotHeader_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            MainPagePivot.SelectedIndex = PivotHeaderGrid.Children.IndexOf((Grid) sender);
         }
     }
 }

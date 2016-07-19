@@ -7,9 +7,62 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Pivot x:Uid="MainPivot">
-            <PivotItem x:Uid="Home"
-                       Header="主页">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!-- 自己绘制的Pivot头部 -->
+        <Grid x:Name="PivotHeaderGrid" Grid.Row="0" Background="DodgerBlue">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" Tapped="PivotHeader_OnTapped">
+                <StackPanel Margin="10"  Visibility="Collapsed">
+                    <Image MaxHeight="30" Source="../Assets/MainPage/Home.png"/>
+                    <TextBlock HorizontalAlignment="Center" FontSize="15" Foreground="LightGray">主页</TextBlock>
+                </StackPanel>
+                <StackPanel Margin="10">
+                    <Image MaxHeight="30" Source="../Assets/MainPage/Home-Select.png"/>
+                    <TextBlock HorizontalAlignment="Center" FontSize="15" Foreground="White">主页</TextBlock>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="1" Tapped="PivotHeader_OnTapped">
+                <StackPanel Margin="10">
+                    <Image MaxHeight="30" Source="../Assets/MainPage/Activity.png"/>
+                    <TextBlock HorizontalAlignment="Center" FontSize="15" Foreground="LightGray">活动</TextBlock>
+                </StackPanel>
+                <StackPanel Margin="10" Visibility="Collapsed">
+                    <Image MaxHeight="30" Source="../Assets/MainPage/Activity-Select.png"/>
+                    <TextBlock HorizontalAlignment="Center" FontSize="15" Foreground="White">活动</TextBlock>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="2" Tapped="PivotHeader_OnTapped">
+                <StackPanel Margin="10">
+                    <Image MaxHeight="30" Source="../Assets/MainPage/Module.png"/>
+                    <TextBlock HorizontalAlignment="Center" FontSize="15" Foreground="LightGray">主页</TextBlock>
+                </StackPanel>
+                <StackPanel Margin="10" Visibility="Collapsed">
+                    <Image MaxHeight="30" Source="../Assets/MainPage/Module-Select.png"/>
+                    <TextBlock HorizontalAlignment="Center" FontSize="15" Foreground="White">主页</TextBlock>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="3" Tapped="PivotHeader_OnTapped">
+                <StackPanel Margin="10">
+                    <Image MaxHeight="30" Source="../Assets/MainPage/User.png"/>
+                    <TextBlock HorizontalAlignment="Center" FontSize="15" Foreground="LightGray">主页</TextBlock>
+                </StackPanel>
+                <StackPanel Margin="10" Visibility="Collapsed">
+                    <Image  MaxHeight="30" Source="../Assets/MainPage/User-Select.png"/>
+                    <TextBlock HorizontalAlignment="Center" FontSize="15" Foreground="White">主页</TextBlock>
+                </StackPanel>
+            </Grid>
+        </Grid>
+        
+        <Pivot x:Name="MainPagePivot" Grid.Row="1" Style="{StaticResource MainPagePivot}" SelectionChanged="Pivot_OnSelectionChanged">
+            <PivotItem>
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                     <Button Content="校园网"
                             Height="50"
@@ -44,22 +97,21 @@
                 </StackPanel>
             </PivotItem>
 
-            <PivotItem x:Uid="Activity"
-                       Header="活动">
+            <PivotItem>
+
+            </PivotItem>
+            
+            <PivotItem>
+
             </PivotItem>
 
-            <PivotItem x:Uid="Module"
-                       Header="模块">
-            </PivotItem>
-
-            <PivotItem x:Uid="Mine"
-                       Header="我的">
+            <PivotItem>
                 <Button x:Name="ButtonLogout" 
                         Content="退出登录" 
                         HorizontalAlignment="Center" 
                         Height="47" 
-                        Margin="0,500,0,0" 
-                        VerticalAlignment="Top" 
+                        Margin="0,0,0,20"
+                        VerticalAlignment="Bottom" 
                         Click="Logout"
                         Width="134"/>
             </PivotItem>

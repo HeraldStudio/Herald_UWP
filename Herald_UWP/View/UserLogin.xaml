@@ -7,8 +7,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button x:Name="Button" 
-                Content="登录" 
+        <Button Content="登录" 
                 HorizontalAlignment="Center" 
                 Height="54" 
                 VerticalAlignment="Center" 
@@ -16,6 +15,7 @@
                 Click="TestAuth" 
                 Margin="91,380,94,206"/>
         <TextBox x:Name="TBoxUserId" 
+                 PlaceholderText="一卡通号"
                  HorizontalAlignment="Center" 
                  Height="36" 
                  TextWrapping="Wrap"
@@ -23,6 +23,7 @@
                  Width="175" 
                  Margin="91,202,94,0"/>
         <PasswordBox x:Name="PBoxPassword" 
+                     PlaceholderText="密码"
                      HorizontalAlignment="Center" 
                      Height="36" 
                      VerticalAlignment="Top" 

@@ -132,6 +132,14 @@
     <None Include="Herald_UWP_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\MainPage\Activity-Select.png" />
+    <Content Include="Assets\MainPage\Activity.png" />
+    <Content Include="Assets\MainPage\Home-Select.png" />
+    <Content Include="Assets\MainPage\Home.png" />
+    <Content Include="Assets\MainPage\Module-Select.png" />
+    <Content Include="Assets\MainPage\Module.png" />
+    <Content Include="Assets\MainPage\User-Select.png" />
+    <Content Include="Assets\MainPage\User.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -180,6 +188,7 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
