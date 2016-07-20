@@ -33,6 +33,9 @@ namespace Herald_UWP.Utils
 
             // 发起请求，结果即为UUID
             var responseContent = await _client.Post(ApiBasicInfo.Auth, requestContent);
+#if DEBUG 
+            responseContent = "4171a4ee6693514eb403774ccea9d95e84096aad";
+#endif
             if (responseContent.Contains("401: Unauthorized")) return false;
             Uuid = responseContent;
 
@@ -117,7 +120,10 @@ namespace Herald_UWP.Utils
                 {
                     isWrongResult = false;
                     resultObj = JObject.Parse(resultStr);
+
+                    // 系统错误继续重试
                     if (resultObj["code"].Value<int>() == 500) isWrongResult = true;
+                    // ApiBasicInfo接口有时候会返回空内容，但是代码却是200
                     if (url == ApiBasicInfo.Sidebar && !resultObj["content"].HasValues) isWrongResult = true;
                 }
                 catch (JsonReaderException)
@@ -132,14 +138,14 @@ namespace Herald_UWP.Utils
             {
                 case 200:
                     return resultObj;
+                case 201:
+                    return resultObj;
                 case 400:
                     throw new HeraldRequestException("Error " + code + "：缺少参数");
                 case 401:
                     throw new HeraldRequestException("Error" + code + "：身份认证失败");
                 case 408:
                     throw new HeraldRequestException("Error" + code + "：访问超时");
-                case 500:
-                    throw new HeraldRequestException("Error" + code + "：系统错误");
                 default:
                     throw new HeraldRequestException("Error" + code + "其它未知错误");
             }
@@ -270,28 +276,16 @@ namespace Herald_UWP.Utils
             return peDetailInfo;
         }
 
+        public Pc GetPc(JObject json)
+        {
+            return new Pc()
+            {
+                State = json["code"].Value<int>() == 200 ? json["content"].Value<string>() : "没有跑操预报"
+            };
+        }
+
         public Nic GetNic(JObject json)
         {
-            const string str = @"{
-              ""content"": {
-                ""a"": {
-                  ""state"": ""未开通"", 
-                  ""used"": ""0 B""
-                }, 
-                ""web"": {
-                  ""state"": ""正常,离线"", 
-                  ""used"": ""3.5 GB""
-                }, 
-                ""b"": {
-                  ""state"": ""未开通"", 
-                  ""used"": ""0 B""
-                }, 
-                ""left"": ""0.00 元""
-              }, 
-              ""code"": 200
-            }";
-            json = JObject.Parse(str);
-
             var tempUsedUnit = json["content"]["web"]["used"].Value<string>();
             var tempArray = (tempUsedUnit == "暂无流量信息" ? "0 KB" : tempUsedUnit).Split(' ');
 

@@ -12,8 +12,6 @@
         <!-- 用于分组的数据源 -->
         <CollectionViewSource x:Name="GradesCVS"  IsSourceGrouped="True" ItemsPath="Grades"/>
 
-        <SolidColorBrush x:Key="GpaThemeColor" Color="#00B7C3"/>
-
         <!-- 显示成绩的ListView模板 -->
         <DataTemplate x:Name="GradeListViewTemplate" x:DataType="data:GpaGrade">
             <Grid Background="White" Padding="10,5,10,5" BorderBrush="LightGray" BorderThickness="0,0,0,1">

@@ -24,6 +24,7 @@ namespace Herald_UWP.Utils
         public const string Curriculum = ApiUrl + "curriculum";    // 查询课程表
         public const string Gpa = ApiUrl + "gpa";                  // 查询绩点
         public const string Pe = ApiUrl + "pe";                    // 查询跑操
+        public const string Pc = ApiUrl + "pc";                    // 查询跑操
         public const string PeDetail = ApiUrl + "pedetail";        // 查询跑操记录
         public const string Nic = ApiUrl + "nic";                  // 查询校园网信息
         public const string Card = ApiUrl + "card";                // 查询一卡通

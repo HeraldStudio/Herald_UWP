@@ -4,8 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Herald_UWP.Controls"
     mc:Ignorable="d">
-
+    
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -60,10 +61,11 @@
                 </StackPanel>
             </Grid>
         </Grid>
-        
+
         <Pivot x:Name="MainPagePivot" Grid.Row="1" Style="{StaticResource MainPagePivot}" SelectionChanged="Pivot_OnSelectionChanged">
-            <PivotItem>
-                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+            <PivotItem x:Name="HomePivotItem">
+                <ListView>
+                    <controls:PeShortcutGrid x:Name="PeShortcut"/>
                     <Button Content="校园网"
                             Height="50"
                             Width="140"
@@ -94,21 +96,17 @@
                             Click="NaviToCard"
                             Margin="20"
                             HorizontalAlignment="Center"/>
-                </StackPanel>
+                </ListView>
             </PivotItem>
 
-            <PivotItem>
+            <PivotItem/>
 
-            </PivotItem>
-            
-            <PivotItem>
+            <PivotItem/>
 
-            </PivotItem>
-
-            <PivotItem>
+            <PivotItem >
                 <Button x:Name="ButtonLogout" 
                         Content="退出登录" 
-                        HorizontalAlignment="Center" 
+                        HorizontalAlignment="Stretch" 
                         Height="47" 
                         Margin="0,0,0,20"
                         VerticalAlignment="Bottom" 

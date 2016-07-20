@@ -7,10 +7,6 @@
     xmlns:uwp="using:PullToRefresh.UWP"
     xmlns:utils="using:Herald_UWP.Utils"
     mc:Ignorable="d">
-
-    <Page.Resources>
-        <SolidColorBrush x:Key="PeThemeColor" Color="#00B294"></SolidColorBrush>
-    </Page.Resources>
     
     <uwp:PullToRefreshBox RefreshInvoked="PullToRefreshInvoked">
         <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">

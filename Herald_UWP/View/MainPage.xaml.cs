@@ -31,7 +31,7 @@ namespace Herald_UWP.View
         {
             Frame?.Navigate(typeof(CardPage));
         }
-        
+
         private void NaviToCurriculum(object sender, RoutedEventArgs e)
         {
             Frame?.Navigate(typeof(CurriculumPage));
@@ -47,6 +47,7 @@ namespace Herald_UWP.View
             Frame?.Navigate(typeof(NicPage));
         }
 
+        // 自定义的Pivot头部在切换时的外观变化
         private void Pivot_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var preGrid = (Grid)VisualTreeHelper.GetChild(PivotHeaderGrid, _preIndex);
@@ -65,6 +66,7 @@ namespace Herald_UWP.View
             }
         }
 
+        // 点击自定义的Pivot头部事件
         private void PivotHeader_OnTapped(object sender, TappedRoutedEventArgs e)
         {
             MainPagePivot.SelectedIndex = PivotHeaderGrid.Children.IndexOf((Grid) sender);

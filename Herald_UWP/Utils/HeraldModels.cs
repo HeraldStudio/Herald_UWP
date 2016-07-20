@@ -155,6 +155,12 @@ namespace Herald_UWP.Utils
     }
 
     [JsonObject]
+    public class Pc
+    {
+        public string State { set; get; }
+    }
+
+    [JsonObject]
     public class Nic
     {
         [JsonProperty("left")]
@@ -163,4 +169,5 @@ namespace Herald_UWP.Utils
         public string Unit { set; get; }
         public string State { set; get; }
     }
+
 }

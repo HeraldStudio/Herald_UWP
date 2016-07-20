@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -11,23 +12,40 @@ namespace Herald_UWP.View
 {
     public sealed partial class PePage
     {
-        private readonly App _cuurrentApp = Application.Current as App;
+        private static readonly App CuurrentApp = Application.Current as App;
         private static PeDetail _peDetailData;
         private static Pe _peData;
-
+        private static Pc _pcData;
+        
         public PePage()
         {
             InitializeComponent();
-            NavigationCacheMode = NavigationCacheMode.Enabled;
-            InitializeContent();
+            InitializeView();
         }
 
-        private async void InitializeContent(bool isRefresh = false)
+        // 在首页进行刷新数据时用到的方法
+        public static async Task InitializeData(bool isRefresh = false)
         {
-            _peDetailData = await _cuurrentApp.Client.QueryForData<PeDetail>(isRefresh: isRefresh);
-            _peData = await _cuurrentApp.Client.QueryForData<Pe>(isRefresh: isRefresh);
+            _peDetailData = await CuurrentApp.Client.QueryForData<PeDetail>(isRefresh: isRefresh);
+            _peData = await CuurrentApp.Client.QueryForData<Pe>(isRefresh: isRefresh);
+            _pcData = await CuurrentApp.Client.QueryForData<Pc>(isRefresh: isRefresh);
+        }
+
+        // 首页会用到的两个对象
+        public static Pc GetPcData() { return _pcData; }
+        public static Pe GetPeData() { return _peData; }
+
+        public static object GetPePageData()
+        {
+            return new {State = _pcData.State, Pe = _peData};
+        }
+
+        // 绘制日历视图
+        private async void InitializeView(bool isRefresh = false)
+        {
+            if (_peData == null || _peDetailData == null || _pcData == null) await InitializeData(isRefresh);
             DataContext = _peData;
-            
+
             if (PeDetailCalendarGrid.Children.Count != 0) PeDetailCalendarGrid.Children.RemoveAt(0);
             var peCalendarView = new CalendarView()
             {
@@ -45,11 +63,13 @@ namespace Herald_UWP.View
             PeDetailCalendarGrid.Children.Add(peCalendarView);
         }
 
+        // 刷新
         private void PullToRefreshInvoked(DependencyObject sender, object args)
         {
-            InitializeContent(true);
+            InitializeView(true);
         }
 
+        // 在加载日历的时候对每个日期判断是否跑过
         private void SetDayStateOnLoading(CalendarView sender, CalendarViewDayItemChangingEventArgs args)
         {
             var dayItem = args.Item;

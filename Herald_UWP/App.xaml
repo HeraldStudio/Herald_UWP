@@ -5,7 +5,7 @@
     RequestedTheme="Light">
 
     <Application.Resources>
-        <!-- 自定义的ListViewHeaderItem模板，去掉了下面的横线，并使内容拉伸到父元素宽度 -->
+        <!-- 更改默认的ListViewHeaderItem模板，去掉了下面的横线，并使内容拉伸到父元素宽度 -->
         <Style TargetType="ListViewHeaderItem">
             <Setter Property="Template">
                 <Setter.Value>
@@ -27,7 +27,19 @@
             </Setter>
         </Style>
         
-        <!-- 自定义的Pivot模板，在默认模板的基础上做的一点点修改，隐藏了头部 -->
+        <!-- 去掉ListViewItem的点击颜色 -->
+        <Style TargetType="ListViewItem">
+            <Setter Property="Padding" Value="0"></Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <ListViewItemPresenter/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- 隐藏了Pivot的头部，去掉了Item的Margin -->
         <Style x:Key="MainPagePivot" TargetType="Pivot">
             <Setter Property="Margin" Value="0" />
             <Setter Property="Padding" Value="0" />
@@ -36,7 +48,7 @@
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
-                        <Grid />
+                        <Grid/>
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
@@ -219,17 +231,17 @@
                                     </ControlTemplate>
                                 </Grid.Resources>
                                 <ScrollViewer x:Name="ScrollViewer"
-                                                Margin="{TemplateBinding Padding}"
-                                                HorizontalSnapPointsType="MandatorySingle"
-                                                HorizontalSnapPointsAlignment="Center"
-                                                HorizontalScrollBarVisibility="Hidden"
-                                                VerticalScrollMode="Disabled"
-                                                VerticalScrollBarVisibility="Disabled"
-                                                VerticalSnapPointsType="None"
-                                                VerticalContentAlignment="Stretch"
-                                                ZoomMode="Disabled"
-                                                Template="{StaticResource ScrollViewerScrollBarlessTemplate}"
-                                                BringIntoViewOnFocusChange="False">
+                                              Margin="{TemplateBinding Padding}"
+                                              HorizontalSnapPointsType="MandatorySingle"
+                                              HorizontalSnapPointsAlignment="Center"
+                                              HorizontalScrollBarVisibility="Hidden"
+                                              VerticalScrollMode="Disabled"
+                                              VerticalScrollBarVisibility="Disabled"
+                                              VerticalSnapPointsType="None"
+                                              VerticalContentAlignment="Stretch"
+                                              ZoomMode="Disabled"
+                                              Template="{StaticResource ScrollViewerScrollBarlessTemplate}"
+                                              BringIntoViewOnFocusChange="False">
                                     <PivotPanel x:Name="Panel" VerticalAlignment="Stretch">
                                         <Grid x:Name="PivotLayoutElement">
                                             <Grid.RowDefinitions>
@@ -309,7 +321,7 @@
                                                               HorizontalAlignment="Stretch"
                                                               VerticalAlignment="Stretch" />
                                             <!-- Pivot的项目 -->
-                                            <ItemsPresenter x:Name="PivotItemPresenter" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
+                                            <ItemsPresenter x:Name="PivotItemPresenter" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Width="360">
                                                 <ItemsPresenter.RenderTransform>
                                                     <TransformGroup>
                                                         <TranslateTransform x:Name="ItemsPresenterTranslateTransform" />
@@ -326,7 +338,11 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Thickness x:Key="PivotItemMargin">0</Thickness>
 
+        <!-- 几个模块的主题颜色 -->
+        <SolidColorBrush x:Key="PeThemeColor" Color="#FF26A69A"/>
+        <SolidColorBrush x:Key="GpaThemeColor" Color="#00B7C3"/>
     </Application.Resources>
 </Application>
 
